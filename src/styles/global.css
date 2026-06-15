@@ -313,6 +313,25 @@
     border-color:     var(--btn-primary-hover-border);
   }
 
+  /* Gradient primary override */
+  .btn-primary {
+    background: var(--gradient-accent);
+    border-color: transparent;
+    color: #ffffff;
+    transition:
+      box-shadow 360ms var(--ease-out),
+      transform 360ms var(--ease-out),
+      filter 360ms var(--ease-out);
+  }
+  .btn-primary:hover:not(:disabled):not([aria-disabled="true"]) {
+    transform: translateY(-2px);
+    box-shadow: 0 0 28px rgba(129,140,248,0.40);
+    filter: brightness(1.1);
+  }
+  [data-theme="light"] .btn-primary:hover:not(:disabled):not([aria-disabled="true"]) {
+    box-shadow: 0 0 28px rgba(79,70,229,0.35);
+  }
+
   /* Variant: secondary — transparent border with fill-from-left animation */
   .btn-secondary {
     background-color: transparent;

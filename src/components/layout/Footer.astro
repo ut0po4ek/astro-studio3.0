@@ -1,0 +1,182 @@
+---
+import { siteConfig } from '../../config/site';
+import Icon from '../ui/Icon.astro';
+const navLinks = siteConfig.nav;
+---
+
+<style>
+  .footer-root {
+    --footer-text:       #f7f1e7;
+    --footer-text-muted: rgba(247, 241, 231, 0.65);
+    --footer-text-sub:   rgba(247, 241, 231, 0.42);
+    --footer-border:     rgba(247, 241, 231, 0.10);
+  }
+  .footer-brand { color: var(--footer-text); }
+  .footer-link-muted { color: var(--footer-text-muted); }
+  .footer-link-muted:hover { color: var(--footer-text); }
+  .footer-link-sub { color: var(--footer-text-sub); }
+  .footer-link-sub:hover { color: var(--footer-text); }
+  .footer-cta-btn {
+    border: 1px solid rgba(247, 241, 231, 0.30);
+    color: var(--footer-text);
+    transition: border-color 300ms ease, background 300ms ease, color 300ms ease;
+  }
+  .footer-cta-btn:hover {
+    border-color: var(--footer-text);
+    background: rgba(247, 241, 231, 0.10);
+  }
+  .footer-bottom-border { border-top: 1px solid var(--footer-border); }
+  .footer-icon-link {
+    width: 2.25rem;
+    height: 2.25rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(247, 241, 231, 0.14);
+    border-radius: 999px;
+    color: var(--footer-text-sub);
+    transition: color 200ms ease, border-color 200ms ease, background-color 200ms ease;
+  }
+  .footer-icon-link:hover {
+    color: var(--footer-text);
+    border-color: rgba(247, 241, 231, 0.40);
+    background-color: rgba(247, 241, 231, 0.06);
+  }
+  .footer-ig-text {
+    font-size: 0.6rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+  }
+  .footer-link {
+    position: relative;
+    padding-bottom: 1px;
+    transition: color 200ms ease;
+  }
+  .footer-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 100%;
+    height: 1px;
+    background: var(--gradient-accent);
+    transition: right 280ms var(--ease-out);
+  }
+  .footer-link:hover::after { right: 0; }
+  .footer-link:hover { color: var(--footer-text); }
+</style>
+
+<footer class="footer-root relative" style="background: var(--color-bg-dark);">
+  <!-- Gradient top border -->
+  <div
+    aria-hidden="true"
+    style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--color-accent),var(--color-accent-2),transparent);"
+  ></div>
+
+  <div class="container-site py-16 md:py-20">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 md:gap-8">
+      <!-- Brand -->
+      <div class="lg:col-span-1">
+        <a href="/" class="footer-brand text-sm font-medium tracking-[0.15em] uppercase block mb-4">
+          <span style="color:var(--color-fg);">Astro</span><span class="gradient-text">&nbsp;Studio</span>
+        </a>
+        <p class="footer-link-muted text-sm leading-relaxed max-w-xs">
+          {siteConfig.footer.tagline}
+        </p>
+      </div>
+
+      <!-- Navigation -->
+      <div>
+        <p class="label-tag footer-link-sub mb-5">Навигация</p>
+        <nav aria-label="Навигация в подвале" class="flex flex-col gap-3">
+          {navLinks.map((link) => (
+            <a href={link.href} class="footer-link footer-link-muted text-sm">
+              {link.label}
+            </a>
+          ))}
+        </nav>
+      </div>
+
+      <!-- Contacts -->
+      <div>
+        <p class="label-tag footer-link-sub mb-5">Контакты</p>
+        <div class="flex flex-col gap-3">
+          <a
+            href={`mailto:${siteConfig.contacts.email}`}
+            class="footer-link footer-link-muted text-sm"
+          >
+            {siteConfig.contacts.email}
+          </a>
+        </div>
+
+        <div class="flex gap-3 mt-6">
+          <a
+            href={siteConfig.contacts.telegram && siteConfig.contacts.telegram !== 'about:blank' ? siteConfig.contacts.telegram : '#'}
+            class="footer-icon-link"
+            target={siteConfig.contacts.telegram && siteConfig.contacts.telegram !== 'about:blank' ? '_blank' : undefined}
+            rel="noreferrer"
+            aria-label="Telegram"
+          >
+            <Icon name="telegram" size={17} />
+          </a>
+          <a
+            href={siteConfig.contacts.whatsapp && siteConfig.contacts.whatsapp !== 'about:blank' ? siteConfig.contacts.whatsapp : '#'}
+            class="footer-icon-link"
+            target={siteConfig.contacts.whatsapp && siteConfig.contacts.whatsapp !== 'about:blank' ? '_blank' : undefined}
+            rel="noreferrer"
+            aria-label="WhatsApp"
+          >
+            <Icon name="whatsapp" size={17} />
+          </a>
+          <a
+            href={siteConfig.contacts.instagram && siteConfig.contacts.instagram !== 'about:blank' ? siteConfig.contacts.instagram : '#'}
+            class="footer-icon-link footer-ig-text"
+            target={siteConfig.contacts.instagram && siteConfig.contacts.instagram !== 'about:blank' ? '_blank' : undefined}
+            rel="noreferrer"
+            aria-label="Instagram*"
+          >
+            IG
+          </a>
+          <a
+            href={siteConfig.contacts.vk && siteConfig.contacts.vk !== 'about:blank' ? siteConfig.contacts.vk : '#'}
+            class="footer-icon-link"
+            target={siteConfig.contacts.vk && siteConfig.contacts.vk !== 'about:blank' ? '_blank' : undefined}
+            rel="noreferrer"
+            aria-label="VK"
+          >
+            <Icon name="vk" size={17} />
+          </a>
+        </div>
+      </div>
+
+      <!-- CTA -->
+      <div>
+        <p class="label-tag footer-link-sub mb-5">Начать работу</p>
+        <p class="footer-link-muted text-sm mb-6 leading-relaxed">
+          {siteConfig.footer.ctaText}
+        </p>
+        <a
+          href={siteConfig.cta.href}
+          class="footer-cta-btn inline-flex items-center gap-2 px-5 py-2.5 text-xs font-medium tracking-widest uppercase"
+        >
+          {siteConfig.cta.label}
+        </a>
+      </div>
+    </div>
+
+    <!-- Bottom bar -->
+    <div class="footer-bottom-border mt-16 pt-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <p class="footer-link-sub text-xs">
+        © {siteConfig.year} {siteConfig.name}. Все права защищены.
+      </p>
+      <div class="flex gap-6">
+        <a href={siteConfig.footer.privacyHref} class="footer-link footer-link-sub text-xs">
+          Политика конфиденциальности
+        </a>
+      </div>
+    </div>
+
+    <!-- Legal disclaimer -->
+    <p class="footer-link-sub text-[10px] leading-relaxed mt-6 max-w-xl">
+      *Instagram принадлежит компании Meta Platforms Inc., деятельность которой признана экстремистской и запрещена на территории РФ.
+    </p>
+  </div>
+</footer>
