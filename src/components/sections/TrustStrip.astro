@@ -1,0 +1,62 @@
+---
+interface Props {
+  variant?: 'forward' | 'reverse' | 'both';
+}
+const { variant = 'both' } = Astro.props;
+
+const items = [
+  'Web Design', '·', 'Development', '·', 'Landing Pages', '·', 'E-commerce', '·',
+  '3D Visuals', '·', 'UI/UX Design', '·', 'Brand Identity', '·', 'Запуск под ключ', '·',
+  'Адаптивный дизайн', '·', 'Внимание к деталям', '·',
+];
+
+const itemsReverse = [
+  'Дизайн-системы', '·', 'Продающие сайты', '·', 'Motion Design', '·',
+  'SEO-оптимизация', '·', 'Фирменный стиль', '·', 'Прототипирование', '·',
+  'Адаптивная вёрстка', '·', 'Визуальные концепции', '·',
+];
+
+const doubled = [...items, ...items];
+const doubledReverse = [...itemsReverse, ...itemsReverse];
+
+const showForward = variant === 'forward' || variant === 'both';
+const showReverse = variant === 'reverse' || variant === 'both';
+---
+
+<div aria-label="Направления работы">
+  {showForward && (
+    <div class="scroll-line-occluder py-4 border-y border-[var(--color-border)] overflow-hidden" style="background: var(--color-bg);">
+      <div class="marquee-track" aria-hidden="true">
+        {doubled.map((item) => (
+          <span
+            class="shrink-0 px-6"
+            style={item === '·'
+              ? 'color: var(--color-accent); font-size: 0.5rem;'
+              : 'color: var(--color-fg-muted); font-size: 0.7rem; font-weight: 500; letter-spacing: 0.15em; text-transform: uppercase; white-space: nowrap;'
+            }
+          >
+            {item}
+          </span>
+        ))}
+      </div>
+    </div>
+  )}
+
+  {showReverse && (
+    <div class="scroll-line-occluder py-4 border-b border-[var(--color-border)] overflow-hidden" style="background: var(--color-bg);">
+      <div class="marquee-track-reverse" aria-hidden="true">
+        {doubledReverse.map((item) => (
+          <span
+            class="shrink-0 px-6"
+            style={item === '·'
+              ? 'color: var(--color-accent); font-size: 0.5rem;'
+              : 'color: var(--color-fg-muted); font-size: 0.65rem; font-weight: 400; letter-spacing: 0.12em; text-transform: uppercase; white-space: nowrap;'
+            }
+          >
+            {item}
+          </span>
+        ))}
+      </div>
+    </div>
+  )}
+</div>

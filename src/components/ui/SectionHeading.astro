@@ -1,0 +1,30 @@
+---
+interface Props {
+  label?: string;
+  title: string;
+  subtitle?: string;
+  align?: 'left' | 'center';
+  class?: string;
+}
+const { label, title, subtitle, align = 'left', class: className = '' } = Astro.props;
+const centerClass = align === 'center' ? 'text-center items-center' : '';
+---
+
+<div class={`flex flex-col ${centerClass} ${className}`} data-reveal>
+  {label && (
+    <span class="label-tag text-[var(--color-accent)] text-xs font-medium tracking-[0.2em] uppercase mb-3">
+      {label}
+    </span>
+  )}
+  <span class="accent-line" style={align === 'center' ? 'margin: 0 auto 1rem;' : ''}></span>
+  <h2 class="text-[var(--color-fg)] font-light leading-tight"
+      style="font-size: clamp(1.75rem, 4vw, 3rem); letter-spacing: -0.02em;">
+    {title}
+  </h2>
+  {subtitle && (
+    <p class="text-[var(--color-fg-muted)] text-base leading-relaxed mt-4 max-w-2xl"
+       style={align === 'center' ? 'margin: 1rem auto 0;' : ''}>
+      {subtitle}
+    </p>
+  )}
+</div>

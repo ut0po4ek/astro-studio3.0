@@ -1,0 +1,63 @@
+---
+import { Image } from 'astro:assets';
+import type { Project } from '../../data/portfolio';
+
+interface Props {
+  project: Project;
+  size?: 'large' | 'small';
+  class?: string;
+}
+const { project, size = 'small', class: className = '' } = Astro.props;
+---
+
+<a
+  href={`/portfolio/${project.slug}`}
+  class={`portfolio-card group relative block overflow-hidden rounded-xl bg-[var(--color-bg-warm)] border border-[var(--color-border)] ${className}`}
+  aria-label={`Кейс: ${project.title}`}
+>
+  <div class="relative overflow-hidden aspect-[16/9]">
+    <Image
+      src={project.image}
+      alt={project.title}
+      class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+      loading="lazy"
+    />
+    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+
+    <div class="absolute top-4 left-4">
+      <span class="text-[9px] font-medium tracking-[0.2em] uppercase px-2.5 py-1 rounded-full bg-black/50 text-white/80 backdrop-blur-sm">
+        Case Study
+      </span>
+    </div>
+
+    <div class="absolute top-4 right-4 flex flex-wrap gap-1.5 justify-end max-w-[60%]">
+      {project.tags.map(tag => (
+        <span class="text-[9px] font-medium tracking-[0.12em] uppercase px-2 py-0.5 rounded-full bg-black/40 text-white/80 backdrop-blur-sm">
+          {tag}
+        </span>
+      ))}
+    </div>
+  </div>
+
+  <div class="p-5 flex flex-col gap-2">
+    <div class="flex items-start justify-between gap-2">
+      <h3
+        class="font-medium text-[var(--color-fg)] group-hover:text-[var(--color-accent)] transition-colors duration-300"
+        style="font-size: 0.9375rem; letter-spacing: 0;"
+      >
+        {project.title}
+      </h3>
+      <svg
+        class="shrink-0 mt-0.5 text-[var(--color-fg-subtle)] group-hover:text-[var(--color-accent)] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-300"
+        width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"
+        aria-hidden="true"
+      >
+        <line x1="0" y1="14" x2="14" y2="0"/>
+        <polyline points="5,0 14,0 14,9"/>
+      </svg>
+    </div>
+    <p class="text-[var(--color-fg-muted)] text-xs leading-relaxed line-clamp-2">
+      {project.shortDescription}
+    </p>
+  </div>
+</a>

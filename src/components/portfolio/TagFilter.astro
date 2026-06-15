@@ -1,0 +1,48 @@
+---
+const filters = [
+  { label: 'Все',         value: 'all' },
+  { label: 'Лендинги',   value: 'landing' },
+  { label: 'E-commerce', value: 'ecommerce' },
+  { label: 'HoReCa',     value: 'horeca' },
+];
+---
+
+<div class="flex flex-wrap gap-2 mb-10" role="group" aria-label="Фильтр по категориям">
+  {filters.map((f, i) => (
+    <button
+      class={`tag-chip cursor-pointer ${i === 0 ? 'active' : ''}`}
+      data-filter={f.value}
+    >
+      {f.label}
+    </button>
+  ))}
+</div>
+
+<script>
+  function initFilter() {
+    const buttons = document.querySelectorAll<HTMLElement>('[data-filter]');
+    const cards = document.querySelectorAll<HTMLElement>('[data-category]');
+    if (!buttons.length) return;
+
+    buttons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const filter = btn.dataset.filter ?? 'all';
+
+        // Активный стиль
+        buttons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        // Показать/скрыть карточки
+        cards.forEach(card => {
+          const cat = card.dataset.category ?? '';
+          const show = filter === 'all' || cat === filter;
+          card.style.display = show ? '' : 'none';
+          card.style.opacity = show ? '' : '0';
+        });
+      });
+    });
+  }
+
+  document.addEventListener('astro:page-load', initFilter);
+  initFilter();
+</script>

@@ -1,0 +1,45 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import HeroSplit from '../components/sections/HeroSplit.astro';
+import TrustStrip from '../components/sections/TrustStrip.astro';
+import ServicesGrid from '../components/sections/ServicesGrid.astro';
+import FeaturedWork from '../components/sections/FeaturedWork.astro';
+import ProcessSection from '../components/sections/ProcessSection.astro';
+import WhySection from '../components/sections/WhySection.astro';
+import CtaSection from '../components/sections/CtaSection.astro';
+import ContactSection from '../components/sections/ContactSection.astro';
+import Header from '../components/layout/Header.astro';
+import Footer from '../components/layout/Footer.astro';
+---
+
+<BaseLayout
+  title="Astro Studio — сайты, лендинги и digital-дизайн"
+  description="Создаём современные сайты, лендинги, интернет-магазины и визуальные решения для бизнеса в России и СНГ."
+>
+  <Header />
+  <main data-scroll-line-region style="position: relative; isolation: isolate;">
+    <div class="scroll-line-wrap" aria-hidden="true">
+      <svg viewBox="0 0 1000 5200" preserveAspectRatio="none" focusable="false">
+        <path
+          class="scroll-line-track"
+          d="M 500 60 C 180 380 820 780 420 1180 C 120 1500 780 1880 380 2280 C 80 2600 820 2980 460 3380 C 180 3680 780 4060 380 4460 C 200 4760 700 5000 500 5200"
+        />
+        <path
+          class="scroll-line-progress"
+          d="M 500 60 C 180 380 820 780 420 1180 C 120 1500 780 1880 380 2280 C 80 2600 820 2980 460 3380 C 180 3680 780 4060 380 4460 C 200 4760 700 5000 500 5200"
+        />
+      </svg>
+    </div>
+    <HeroSplit />
+    <TrustStrip variant="forward" />
+    <ServicesGrid />
+    <TrustStrip variant="reverse" />
+    <FeaturedWork />
+    <ProcessSection />
+    <WhySection />
+    <CtaSection />
+    <ContactSection />
+    <TrustStrip variant="reverse" />
+  </main>
+  <Footer />
+</BaseLayout>

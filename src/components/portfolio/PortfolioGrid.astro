@@ -1,0 +1,16 @@
+---
+import PortfolioCard from './PortfolioCard.astro';
+import { portfolio } from '../../data/portfolio';
+---
+
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+  {portfolio.map((project, i) => (
+    <div
+      data-category={project.category}
+      data-reveal
+      data-reveal-delay={i * 60}
+    >
+      <PortfolioCard project={project} size="small" class="h-full" />
+    </div>
+  ))}
+</div>

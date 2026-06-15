@@ -1,0 +1,193 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/layout/Header.astro';
+import Footer from '../components/layout/Footer.astro';
+import ContactSection from '../components/sections/ContactSection.astro';
+import Icon from '../components/ui/Icon.astro';
+import { siteConfig } from '../config/site';
+
+const channels = [
+  {
+    icon: 'telegram',
+    title: 'Telegram',
+    desc: 'Самый быстрый способ. Отвечаем в течение часа в рабочее время.',
+    href: siteConfig.contacts.telegram,
+    label: 'Написать в Telegram',
+  },
+  {
+    icon: 'whatsapp',
+    title: 'WhatsApp',
+    desc: 'Удобно для голосовых сообщений и созвонов.',
+    href: siteConfig.contacts.whatsapp,
+    label: 'Написать в WhatsApp',
+  },
+  {
+    icon: 'vk',
+    title: 'ВКонтакте',
+    desc: 'Публикуем кейсы, процесс работы и советы по дизайну.',
+    href: siteConfig.contacts.vk,
+    label: 'Открыть VK',
+  },
+];
+
+const workingHours = [
+  { day: 'Пн — Пт', time: '10:00 — 20:00' },
+  { day: 'Суббота', time: '11:00 — 18:00' },
+  { day: 'Воскресенье', time: 'выходной' },
+];
+
+const faqs = [
+  {
+    q: 'Как быстро вы отвечаете?',
+    a: 'В рабочее время — в течение 1–2 часов. Вечером и в выходные — в течение нескольких часов. Срочные вопросы лучше решать через Telegram.',
+  },
+  {
+    q: 'Что нужно подготовить для первого разговора?',
+    a: 'Ничего особенного. Достаточно рассказать: что за проект, какая цель сайта и примерные сроки. Остальное выясним на брифинге.',
+  },
+  {
+    q: 'Работаете ли вы удалённо?',
+    a: 'Да, работаем полностью удалённо по всей России и СНГ. Общение через мессенджеры, Figma и видеозвонки — без потери в качестве.',
+  },
+];
+---
+
+<BaseLayout
+  title="Контакты — Astro Studio"
+  description="Свяжитесь с Astro Studio, чтобы обсудить сайт, лендинг, интернет-магазин или digital-дизайн."
+>
+  <Header />
+  <main>
+
+    <!-- Hero -->
+    <section class="pt-32 pb-16 section-padding" style="background: var(--color-bg);">
+      <div class="container-site max-w-3xl">
+        <span class="text-[10px] font-medium tracking-[0.25em] uppercase text-[var(--color-accent)] mb-4 block" data-reveal>
+          Contact
+        </span>
+        <h1
+          class="font-light mb-4"
+          style="font-size: clamp(2rem, 5vw, 3.5rem); letter-spacing: -0.03em; color: var(--color-fg);"
+          data-reveal data-reveal-delay="100"
+        >
+          Начнём работу?
+        </h1>
+        <p class="text-[var(--color-fg-muted)] text-lg leading-relaxed" data-reveal data-reveal-delay="200">
+          Расскажите о проекте — мы ответим, предложим формат и следующий шаг.
+        </p>
+      </div>
+    </section>
+
+    <!-- Channels -->
+    <section class="border-t border-[var(--color-border)]" style="background: var(--color-bg-warm);">
+      <div class="container-site py-12 md:py-16">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {channels.map((ch, i) => (
+            <a
+              href={ch.href && ch.href !== '#' && ch.href !== 'about:blank' ? ch.href : undefined}
+              target={ch.href && ch.href !== '#' && ch.href !== 'about:blank' ? '_blank' : undefined}
+              rel="noreferrer"
+              class="group flex flex-col gap-4 p-6 rounded-xl border border-[var(--color-border)] hover:border-[var(--color-accent)] transition-all duration-300"
+              data-reveal
+              data-reveal-delay={i * 80}
+            >
+              <div class="flex items-center gap-3">
+                <span class="w-10 h-10 flex items-center justify-center border border-[var(--color-border)] rounded-full group-hover:border-[var(--color-accent)] group-hover:text-[var(--color-accent)] transition-all duration-300 text-[var(--color-fg-muted)]">
+                  <Icon name={ch.icon as any} size={18} />
+                </span>
+                <span class="text-[var(--color-fg)] font-medium text-sm">{ch.title}</span>
+              </div>
+              <p class="text-[var(--color-fg-muted)] text-sm leading-relaxed">{ch.desc}</p>
+              <span class="text-[var(--color-accent)] text-xs font-medium tracking-wide uppercase flex items-center gap-1 mt-auto group-hover:gap-2 transition-all duration-300">
+                {ch.label} →
+              </span>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact form + working hours -->
+    <ContactSection />
+
+    <!-- Working hours + FAQ -->
+    <section class="section-padding border-t border-[var(--color-border)]" style="background: var(--color-bg-warm);">
+      <div class="container-site">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-16">
+
+          <!-- Working hours -->
+          <div>
+            <p class="label-tag mb-6" data-reveal>График работы</p>
+            <div class="flex flex-col divide-y divide-[var(--color-border)]">
+              {workingHours.map((wh, i) => (
+                <div
+                  class="flex items-center justify-between py-4"
+                  data-reveal
+                  data-reveal-delay={i * 60}
+                >
+                  <span class="text-[var(--color-fg)] text-sm">{wh.day}</span>
+                  <span class="text-[var(--color-fg-muted)] text-sm">{wh.time}</span>
+                </div>
+              ))}
+            </div>
+            <div class="mt-8 p-5 rounded-xl border border-[var(--color-border)]" data-reveal data-reveal-delay="200">
+              <p class="text-[var(--color-fg)] text-sm font-medium mb-2">Среднее время ответа</p>
+              <p class="text-[var(--color-fg-muted)] text-sm leading-relaxed">
+                В рабочее время — до 1–2 часов. В Telegram отвечаем быстрее всего.
+              </p>
+            </div>
+          </div>
+
+          <!-- Mini FAQ -->
+          <div>
+            <p class="label-tag mb-6" data-reveal>Вопросы перед первым сообщением</p>
+            <div class="flex flex-col divide-y divide-[var(--color-border)]">
+              {faqs.map((faq, i) => (
+                <div
+                  class="py-5"
+                  data-reveal
+                  data-reveal-delay={i * 80}
+                >
+                  <h3 class="text-[var(--color-fg)] font-medium text-sm mb-2">{faq.q}</h3>
+                  <p class="text-[var(--color-fg-muted)] text-sm leading-relaxed">{faq.a}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- Portfolio mini strip -->
+    <section class="section-padding border-t border-[var(--color-border)]" style="background: var(--color-bg);">
+      <div class="container-site">
+        <p class="label-tag mb-6 text-center" data-reveal>Посмотрите, что мы делаем</p>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3" data-reveal data-reveal-delay="100">
+          {[
+            { src: '/portfolio/photographer.png', href: '/portfolio/photographer' },
+            { src: '/portfolio/piccolino.png', href: '/portfolio/piccolino' },
+            { src: '/portfolio/flowers.png', href: '/portfolio/flowers' },
+            { src: '/portfolio/form-light.png', href: '/portfolio/form-light' },
+          ].map(item => (
+            <a href={item.href} class="group aspect-video overflow-hidden rounded-lg border border-[var(--color-border)] hover:border-[var(--color-accent)] transition-colors duration-300">
+              <img
+                src={item.src}
+                alt="Проект"
+                class="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
+                loading="lazy"
+              />
+            </a>
+          ))}
+        </div>
+        <div class="text-center mt-8" data-reveal data-reveal-delay="200">
+          <a href="/portfolio" class="text-[var(--color-accent)] text-sm font-medium tracking-wide uppercase hover:opacity-70 transition-opacity">
+            Смотреть все проекты →
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+  <Footer />
+</BaseLayout>

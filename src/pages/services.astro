@@ -1,0 +1,247 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/layout/Header.astro';
+import Footer from '../components/layout/Footer.astro';
+import ServicesGrid from '../components/sections/ServicesGrid.astro';
+import SectionHeading from '../components/ui/SectionHeading.astro';
+import Button from '../components/ui/Button.astro';
+
+const serviceTypes = [
+  {
+    title: 'Лендинг',
+    label: 'от 1 страницы',
+    desc: 'Одностраничный сайт с сильным первым экраном, продающей структурой и формой заявки. Идеален для запуска продукта, услуги или мероприятия. Загружается быстро, отлично работает на мобильных.',
+    features: ['Дизайн + вёрстка', 'Форма обратной связи', 'Мобильная адаптация', 'Базовое SEO'],
+  },
+  {
+    title: 'Сайт-визитка',
+    label: '3–7 страниц',
+    desc: 'Многостраничный сайт для компании, специалиста или бренда. Включает страницы «О нас», «Услуги», «Портфолио», «Контакты». Создаёт профессиональный образ и отвечает на ключевые вопросы клиентов.',
+    features: ['Несколько страниц', 'Навигация и структура', 'Раздел с контентом', 'Форма контактов'],
+  },
+  {
+    title: 'Корпоративный сайт',
+    label: 'от 7 страниц',
+    desc: 'Полноценный сайт для среднего и крупного бизнеса. Разделы для разных аудиторий, интеграции с CRM, каталоги, блог и расширенная аналитика. Под задачу выстраивается архитектура и дизайн-система.',
+    features: ['Дизайн-система', 'CRM-интеграции', 'Блог / каталог', 'Расширенная аналитика'],
+  },
+  {
+    title: 'Дизайн-концепт',
+    label: 'UI/UX',
+    desc: 'Визуальная концепция для сайта или приложения: UI-kit, ключевые экраны, цветовая система и типографика. Результат — готовый Figma-файл, который передаётся на разработку.',
+    features: ['UI-kit', 'Figma-файл', 'Цветовая система', 'Ключевые экраны'],
+  },
+];
+
+const faqs = [
+  {
+    q: 'Сколько стоит сайт?',
+    a: 'Стоимость зависит от объёма работ: типа сайта, количества страниц, нужна ли разработка с нуля или работа по шаблону. Лендинг, как правило, дешевле корпоративного сайта. Расскажите о проекте — предложим формат и конкретные цифры.',
+  },
+  {
+    q: 'Сколько времени занимает разработка?',
+    a: 'Лендинг — от 7 до 14 рабочих дней. Сайт-визитка — от 2 до 4 недель. Корпоративный сайт — от 4 до 8 недель. Конкретные сроки всегда фиксируем в брифе до начала работы.',
+  },
+  {
+    q: 'Работаете ли вы с готовыми дизайнами?',
+    a: 'Да, если у вас есть дизайн в Figma или другом формате — возьмём в разработку. Также можем доработать или улучшить существующий дизайн перед вёрсткой. Главное, чтобы были все нужные экраны и состояния.',
+  },
+  {
+    q: 'Что входит в запуск под ключ?',
+    a: 'Дизайн (включая адаптивные версии), разработка, форма обратной связи с уведомлениями, базовое SEO, подключение к хостингу, настройка домена и первоначальная настройка аналитики (Google Analytics или Яндекс.Метрика).',
+  },
+  {
+    q: 'Делаете ли вы сайты с тёмной и светлой темой?',
+    a: 'Да, поддержка двух тем — одна из наших специализаций. Можем сделать автоматическое переключение по системным настройкам или ручное с кнопкой на сайте. Обе темы разрабатываются полноценно, без компромиссов.',
+  },
+  {
+    q: 'Есть ли у вас анимации и интерактивность?',
+    a: 'Да, мы уделяем большое внимание деталям: анимации появления при скролле, hover-эффекты, плавные переходы между страницами, micro-interactions в формах. Всё это делает сайт живым и premium на ощупь.',
+  },
+  {
+    q: 'Как происходит оплата?',
+    a: 'Работаем по предоплате 50% перед стартом и 50% по завершении проекта. Для крупных проектов возможна разбивка на этапы с оплатой каждого. Все условия фиксируем в договоре.',
+  },
+  {
+    q: 'Помогаете ли вы после запуска?',
+    a: 'Да, предоставляем поддержку в течение 30 дней после запуска: исправляем найденные баги, помогаем с мелкими правками. Дальнейшая поддержка и доработки обсуждаются отдельно.',
+  },
+  {
+    q: 'Можно ли сделать сайт с нуля без дизайн-файла?',
+    a: 'Да, мы ведём проект с нуля: бриф → концепция → дизайн в Figma → согласование → разработка. Вам не нужно готовить материалы заранее — разберёмся на этапе брифинга.',
+  },
+  {
+    q: 'Какие технологии вы используете?',
+    a: 'Для статичных сайтов и лендингов — Astro, HTML/CSS/JS с оптимальной производительностью. Для более сложных корпоративных проектов — React, Next.js. Всегда выбираем стек под задачу, а не ради технологии.',
+  },
+];
+---
+
+<BaseLayout
+  title="Услуги — Astro Studio"
+  description="Разрабатываем лендинги, сайты-визитки, корпоративные сайты и дизайн-концепты. Полный цикл от дизайна до запуска."
+>
+  <Header />
+  <main>
+
+    <!-- Hero -->
+    <section class="pt-32 pb-20 section-padding" style="background: var(--color-bg);">
+      <div class="container-site max-w-4xl">
+        <span class="text-[10px] font-medium tracking-[0.25em] uppercase text-[var(--color-accent)] mb-4 block" data-reveal>
+          Services
+        </span>
+        <h1
+          class="font-light mb-6"
+          style="font-size: clamp(2.25rem, 6vw, 4rem); letter-spacing: -0.03em; color: var(--color-fg);"
+          data-reveal data-reveal-delay="100"
+        >
+          Создаём сайты<br />под задачу бизнеса
+        </h1>
+        <p
+          class="text-[var(--color-fg-muted)] leading-relaxed max-w-2xl"
+          style="font-size: 1.125rem;"
+          data-reveal data-reveal-delay="200"
+        >
+          От концепции до запуска — проектируем лендинги, сайты-визитки и корпоративные решения, которые выглядят дорого и помогают продавать.
+        </p>
+      </div>
+    </section>
+
+    <!-- Services grid (reuse section component) -->
+    <ServicesGrid />
+
+    <!-- Service types — detailed descriptions -->
+    <section class="section-padding border-t border-[var(--color-border)]" style="background: var(--color-bg-warm);">
+      <div class="container-site">
+        <SectionHeading
+          label="Форматы"
+          title="Какой сайт вам нужен"
+          subtitle="Разные задачи — разные форматы. Выбирайте то, что подходит под цель."
+          class="mb-12"
+        />
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {serviceTypes.map((s, i) => (
+            <div
+              class="flex flex-col gap-4 p-6 rounded-xl border border-[var(--color-border)] hover:border-[var(--color-accent)] transition-colors duration-300"
+              data-reveal="flip-3d"
+              data-reveal-delay={i * 80}
+            >
+              <div class="flex items-start justify-between gap-4">
+                <h3 class="text-[var(--color-fg)] font-medium" style="font-size: 1.0625rem; letter-spacing: 0;">{s.title}</h3>
+                <span class="tag-chip shrink-0">{s.label}</span>
+              </div>
+              <p class="text-[var(--color-fg-muted)] text-sm leading-relaxed">{s.desc}</p>
+              <ul class="flex flex-col gap-1.5 pt-2 border-t border-[var(--color-border)]">
+                {s.features.map(f => (
+                  <li class="flex items-center gap-2 text-[var(--color-fg-muted)] text-xs">
+                    <span class="text-[var(--color-accent)] shrink-0">—</span>
+                    {f}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ accordion -->
+    <section class="section-padding border-t border-[var(--color-border)]" style="background: var(--color-bg);">
+      <div class="container-site max-w-3xl">
+        <SectionHeading
+          label="FAQ"
+          title="Частые вопросы"
+          class="mb-10"
+        />
+        <div class="faq-list flex flex-col divide-y divide-[var(--color-border)]">
+          {faqs.map((faq, i) => (
+            <div class="faq-item" data-reveal data-reveal-delay={i * 50}>
+              <button
+                class="faq-trigger w-full flex items-center justify-between gap-4 py-5 text-left"
+                aria-expanded="false"
+              >
+                <span class="text-[var(--color-fg)] font-medium" style="font-size: 0.9375rem;">{faq.q}</span>
+                <span class="faq-icon shrink-0 w-5 h-5 flex items-center justify-center border border-[var(--color-border)] rounded-full transition-transform duration-300" aria-hidden="true">
+                  <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" class="text-[var(--color-accent)]">
+                    <line x1="5" y1="1" x2="5" y2="9"/>
+                    <line x1="1" y1="5" x2="9" y2="5" class="faq-hline"/>
+                  </svg>
+                </span>
+              </button>
+              <div class="faq-body overflow-hidden" style="max-height: 0; transition: max-height 360ms cubic-bezier(0.16, 1, 0.3, 1);">
+                <p class="text-[var(--color-fg-muted)] text-sm leading-relaxed pb-5">{faq.a}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="section-padding border-t border-[var(--color-border)] text-center" style="background: var(--color-bg-warm);">
+      <div class="container-site">
+        <p class="text-[var(--color-fg-muted)] text-sm uppercase tracking-widest mb-4" data-reveal>Обсудим вашу задачу?</p>
+        <h2
+          class="font-light mb-8"
+          style="font-size: clamp(1.75rem, 4vw, 3rem); letter-spacing: -0.02em; color: var(--color-fg);"
+          data-reveal data-reveal-delay="100"
+        >
+          Расскажите о проекте
+        </h2>
+        <div data-reveal data-reveal-delay="200">
+          <Button href="/contacts" variant="primary" size="lg">
+            Написать нам
+          </Button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+  <Footer />
+</BaseLayout>
+
+<script>
+  function initFaq() {
+    document.querySelectorAll<HTMLElement>('.faq-item').forEach((item) => {
+      if (item.dataset.faqBound === 'true') return;
+      const trigger = item.querySelector<HTMLButtonElement>('.faq-trigger');
+      const body = item.querySelector<HTMLElement>('.faq-body');
+      const icon = item.querySelector<HTMLElement>('.faq-icon');
+      const hline = item.querySelector<SVGLineElement>('.faq-hline');
+      if (!trigger || !body) return;
+      item.dataset.faqBound = 'true';
+
+      trigger.addEventListener('click', () => {
+        const open = trigger.getAttribute('aria-expanded') === 'true';
+
+        // close all others
+        document.querySelectorAll<HTMLElement>('.faq-item').forEach((other) => {
+          const t = other.querySelector<HTMLButtonElement>('.faq-trigger');
+          const b = other.querySelector<HTMLElement>('.faq-body');
+          const ico = other.querySelector<HTMLElement>('.faq-icon');
+          const hl = other.querySelector<SVGLineElement>('.faq-hline');
+          if (t && b) {
+            t.setAttribute('aria-expanded', 'false');
+            b.style.maxHeight = '0';
+          }
+          if (ico) ico.style.transform = '';
+          if (hl) hl.style.opacity = '1';
+        });
+
+        if (!open) {
+          trigger.setAttribute('aria-expanded', 'true');
+          body.style.maxHeight = `${body.scrollHeight}px`;
+          if (icon) icon.style.transform = 'rotate(45deg)';
+          if (hline) hline.style.opacity = '0';
+        }
+      });
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initFaq, { once: true });
+  } else {
+    initFaq();
+  }
+  document.addEventListener('astro:page-load', initFaq);
+</script>

@@ -1,0 +1,358 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/layout/Header.astro';
+import Footer from '../components/layout/Footer.astro';
+import SectionHeading from '../components/ui/SectionHeading.astro';
+import Button from '../components/ui/Button.astro';
+import WhyStats from '../components/sections/WhyStats';
+
+const values = [
+  { label: 'Эстетика', desc: 'Каждый экран — продуманный визуальный образ, не просто вёрстка.' },
+  { label: 'Структура', desc: 'Логичная архитектура сайта, которую понимает и пользователь, и поисковик.' },
+  { label: 'Скорость', desc: 'Быстрая загрузка, чёткие дедлайны, без воды и лишних согласований.' },
+  { label: 'Ответственность', desc: 'Берём на себя весь цикл — дизайн, разработку, запуск.' },
+  { label: 'Внимание к деталям', desc: 'Hover-эффекты, анимации, micro-interactions — это не лишнее, это образ бренда.' },
+];
+
+const stats = [
+  { value: '4+', label: 'проектов запущено' },
+  { value: '2', label: 'темы на каждом сайте' },
+  { value: '100%', label: 'адаптивная вёрстка' },
+  { value: '0', label: 'пропущенных дедлайнов' },
+];
+
+const valuesItems = [
+  { stat: '→', title: 'Качество', description: 'Не сдаём проект, пока не убедимся, что каждая деталь выверена и работает корректно.' },
+  { statNum: 100, statSuffix: '%', title: 'Прозрачность', description: 'Ведём проект открыто: показываем прогресс, объясняем решения, отвечаем на вопросы.' },
+  { stat: '∞', title: 'Внимание', description: 'Берёмся за проекты, в которые верим. Это значит — полная вовлечённость от первого до последнего дня.' },
+];
+
+const process = [
+  {
+    num: '01',
+    title: 'Бриф',
+    desc: 'Понимаем бизнес, аудиторию и цель сайта. Задаём правильные вопросы — чтобы дизайн работал, а не просто выглядел.',
+  },
+  {
+    num: '02',
+    title: 'Концепция',
+    desc: 'Собираем референсы, определяем визуальный язык, цветовую систему и типографику. Всё согласовывается до пиксельной работы.',
+  },
+  {
+    num: '03',
+    title: 'Дизайн',
+    desc: 'Делаем все экраны в Figma — десктоп и мобайл. Каждый блок обоснован: структура ведёт пользователя к целевому действию.',
+  },
+  {
+    num: '04',
+    title: 'Разработка',
+    desc: 'Верстаем точно по дизайну с анимациями, формами и оптимизацией. Сайт быстро загружается и корректно работает на всех устройствах.',
+  },
+  {
+    num: '05',
+    title: 'Запуск',
+    desc: 'Подключаем домен, хостинг, аналитику и уведомления о заявках. После запуска — 30 дней поддержки.',
+  },
+];
+---
+
+<BaseLayout
+  title="О студии — Astro Studio"
+  description="Astro Studio — web-studio, которая создаёт современные digital-проекты с акцентом на эстетику, структуру и бизнес-задачу."
+>
+  <Header />
+  <main>
+
+    <!-- Hero -->
+    <section class="pt-32 pb-20 section-padding" style="background: var(--color-bg);">
+      <div class="container-site max-w-4xl">
+        <span class="text-[10px] font-medium tracking-[0.25em] uppercase text-[var(--color-accent)] mb-4 block" data-reveal>
+          About us
+        </span>
+        <h1
+          class="font-light mb-6"
+          style="font-size: clamp(2.25rem, 6vw, 4rem); letter-spacing: -0.03em; color: var(--color-fg);"
+          data-reveal data-reveal-delay="100"
+        >
+          Astro Studio —<br />web-studio для брендов,<br />которым важно <em style="font-style:normal; color: var(--color-accent);">выглядеть современно</em>
+        </h1>
+        <p
+          class="text-[var(--color-fg-muted)] leading-relaxed max-w-2xl"
+          style="font-size: 1.125rem;"
+          data-reveal data-reveal-delay="200"
+        >
+          Мы создаём сайты, лендинги, интернет-магазины и визуальные решения, которые помогают бизнесу выделяться и вызывать доверие.
+        </p>
+      </div>
+    </section>
+
+    <!-- Stats -->
+    <section class="border-t border-[var(--color-border)]" style="background: var(--color-bg-warm);">
+      <div class="container-site py-12 md:py-16">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
+          {stats.map((s, i) => (
+            <div class="flex flex-col gap-1 stat-block" data-reveal="scale" data-reveal-delay={i * 100}>
+              <span
+                class="stat-number font-light"
+                style="font-size: clamp(2rem, 5vw, 3.25rem); letter-spacing: -0.04em; color: var(--color-accent);"
+                data-stat-value={s.value}
+              >
+                {s.value}
+              </span>
+              <span class="text-[var(--color-fg-muted)] text-xs uppercase tracking-[0.12em]">{s.label}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Mission -->
+    <section class="section-padding border-t border-[var(--color-border)]" style="background: var(--color-bg);">
+      <div class="container-site">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          <div>
+            <SectionHeading
+              label="Mission"
+              title="Наша миссия"
+              subtitle="Создавать digital-проекты, в которых эстетика работает вместе с бизнес-задачей."
+            />
+          </div>
+          <div class="flex flex-col gap-6" data-reveal>
+            <p class="text-[var(--color-fg-muted)] leading-relaxed">
+              Мы начинаем с задачи, а не с картинки. Сначала понимаем продукт, аудиторию и цель сайта — затем собираем визуальную систему, интерфейс и разработку вокруг результата.
+            </p>
+            <p class="text-[var(--color-fg-muted)] leading-relaxed">
+              Делаем дизайн, который выглядит премиально, но остаётся понятным для пользователя. Запускаем адаптивный сайт с формами, базовой аналитикой и готовностью к продвижению.
+            </p>
+            <div class="flex flex-wrap gap-3 pt-2">
+              {['Дизайн в Figma', 'Чистый код', 'Анимации', 'Тёмная и светлая тема', 'Формы заявок'].map(tag => (
+                <span class="tag-chip">{tag}</span>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Process -->
+    <section class="section-padding border-t border-[var(--color-border)]" style="background: var(--color-bg-warm);">
+      <div class="container-site">
+        <SectionHeading
+          label="Process"
+          title="Как мы работаем"
+          subtitle="Прозрачный процесс от брифа до запуска — без сюрпризов."
+          class="mb-12"
+        />
+        <div class="flex flex-col gap-0">
+          {process.map((step, i) => (
+            <div
+              class="process-step group grid grid-cols-1 md:grid-cols-[3rem_1fr] gap-4 md:gap-8 py-8 border-b border-[var(--color-border)] last:border-0"
+              data-reveal={i % 2 === 0 ? 'left' : 'right'}
+              data-reveal-delay={i * 80}
+              data-process-index={i}
+            >
+              <span
+                class="process-num font-light transition-colors duration-300 group-hover:text-[var(--color-accent)]"
+                style="font-size: clamp(1.25rem, 3vw, 1.75rem); letter-spacing: -0.03em; color: var(--color-border);"
+              >
+                {step.num}
+              </span>
+              <div class="flex flex-col gap-2">
+                <h3
+                  class="text-[var(--color-fg)] font-medium transition-colors duration-300 group-hover:text-[var(--color-accent)]"
+                  style="font-size: 1rem; letter-spacing: 0;"
+                >
+                  {step.title}
+                </h3>
+                <p class="text-[var(--color-fg-muted)] text-sm leading-relaxed">{step.desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Values -->
+    <section class="section-padding border-t border-[var(--color-border)]" style="background: var(--color-bg);">
+      <div class="container-site">
+        <SectionHeading
+          label="Values"
+          title="Наши ценности"
+          class="mb-10"
+        />
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {values.map((val, i) => (
+            <div
+              class="group flex flex-col gap-3 p-6 rounded-xl border border-[var(--color-border)] hover:border-[var(--color-accent)] hover:bg-[var(--color-bg-warm)] transition-all duration-300 cursor-default"
+              data-reveal
+              data-reveal-delay={i * 60}
+            >
+              <span
+                class="text-[var(--color-fg)] font-medium transition-colors duration-300 group-hover:text-[var(--color-accent)]"
+                style="font-size: 0.9375rem;"
+              >
+                {val.label}
+              </span>
+              <p class="text-[var(--color-fg-muted)] text-sm leading-relaxed">{val.desc}</p>
+            </div>
+          ))}
+        </div>
+
+        <!-- Animated principles island -->
+        <div class="mt-12" data-reveal>
+          <WhyStats client:visible items={valuesItems} />
+        </div>
+      </div>
+    </section>
+
+    <!-- Portfolio preview strip -->
+    <section class="section-padding border-t border-[var(--color-border)]" style="background: var(--color-bg-warm);">
+      <div class="container-site">
+        <div class="flex flex-col md:flex-row items-start md:items-end justify-between gap-8 mb-10">
+          <SectionHeading
+            label="Portfolio"
+            title="Наши работы"
+          />
+          <Button href="/portfolio" variant="secondary" size="md" data-reveal>
+            Смотреть всё →
+          </Button>
+        </div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3" data-reveal>
+          {[
+            { src: '/portfolio/photographer.png', title: 'Photographer', href: '/portfolio/photographer' },
+            { src: '/portfolio/piccolino.png', title: 'Piccolino', href: '/portfolio/piccolino' },
+            { src: '/portfolio/flowers.png', title: 'Flowers', href: '/portfolio/flowers' },
+            { src: '/portfolio/form-light.png', title: 'Form Light', href: '/portfolio/form-light' },
+          ].map(item => (
+            <a href={item.href} class="group aspect-video overflow-hidden rounded-lg border border-[var(--color-border)] hover:border-[var(--color-accent)] transition-colors duration-300">
+              <img
+                src={item.src}
+                alt={item.title}
+                class="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
+                loading="lazy"
+              />
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="section-padding border-t border-[var(--color-border)] text-center" style="background: var(--color-bg);">
+      <div class="container-site">
+        <p class="text-[var(--color-fg-muted)] text-sm uppercase tracking-widest mb-4" data-reveal>Начнём работу?</p>
+        <h2
+          class="font-light mb-8"
+          style="font-size: clamp(1.75rem, 4vw, 3rem); letter-spacing: -0.02em; color: var(--color-fg);"
+          data-reveal data-reveal-delay="100"
+        >
+          Хотите обсудить проект?
+        </h2>
+        <div data-reveal data-reveal-delay="200">
+          <Button href="/contacts" variant="primary" size="lg">
+            Связаться
+          </Button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+  <Footer />
+</BaseLayout>
+
+<style>
+  .stat-number {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Floating subtle background shapes for visual interest */
+  @keyframes float-slow {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-12px) rotate(3deg); }
+  }
+  @keyframes float-slow-2 {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(10px) rotate(-2deg); }
+  }
+  .float-shape-1 { animation: float-slow 8s ease-in-out infinite; }
+  .float-shape-2 { animation: float-slow-2 11s ease-in-out infinite; }
+</style>
+
+<script>
+  function initStatCounters() {
+    const statBlocks = document.querySelectorAll<HTMLElement>('.stat-block');
+    if (!statBlocks.length) return;
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        const el = entry.target as HTMLElement;
+        const numEl = el.querySelector<HTMLElement>('[data-stat-value]');
+        if (!numEl || el.dataset.counted === 'true') return;
+        el.dataset.counted = 'true';
+
+        const raw = numEl.dataset.statValue ?? '';
+        const match = raw.match(/^(\d+)/);
+        if (!match) return;
+
+        const target = parseInt(match[1], 10);
+        const suffix = raw.replace(match[1], '');
+        const duration = 1200;
+        const start = performance.now();
+
+        function step(now: number) {
+          const elapsed = now - start;
+          const progress = Math.min(elapsed / duration, 1);
+          const eased = 1 - Math.pow(1 - progress, 3);
+          const current = Math.round(eased * target);
+          numEl!.textContent = current + suffix;
+          if (progress < 1) requestAnimationFrame(step);
+        }
+
+        requestAnimationFrame(step);
+        observer.unobserve(el);
+      });
+    }, { threshold: 0.4 });
+
+    statBlocks.forEach(el => observer.observe(el));
+  }
+
+  document.addEventListener('astro:page-load', initStatCounters);
+  initStatCounters();
+</script>
+
+<script>
+  function initProcessGlow() {
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    document.querySelectorAll<HTMLElement>('.process-step').forEach((step) => {
+      if (step.dataset.glowBound === 'true') return;
+      step.dataset.glowBound = 'true';
+
+      const numEl = step.querySelector<HTMLElement>('.process-num');
+      if (!numEl) return;
+
+      if (reduced) {
+        numEl.style.color = 'color-mix(in srgb, var(--color-accent) 55%, transparent)';
+        return;
+      }
+
+      const index = Number(step.dataset.processIndex ?? 0);
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            numEl.style.animationDelay = `${index * 150}ms`;
+            numEl.classList.add('process-num-glow');
+            observer.unobserve(step);
+          });
+        },
+        { threshold: 0.25, rootMargin: '0px 0px -40px 0px' }
+      );
+      observer.observe(step);
+    });
+  }
+
+  document.addEventListener('astro:page-load', initProcessGlow);
+  initProcessGlow();
+</script>
