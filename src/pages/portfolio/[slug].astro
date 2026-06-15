@@ -1,0 +1,305 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/layout/Header.astro';
+import Footer from '../../components/layout/Footer.astro';
+import Button from '../../components/ui/Button.astro';
+import CaseGallery from '../../components/portfolio/CaseGallery';
+import { portfolio, getProjectBySlug } from '../../data/portfolio';
+
+export async function getStaticPaths() {
+  return portfolio.map((project) => ({
+    params: { slug: project.slug },
+  }));
+}
+
+const { slug } = Astro.params;
+const project = getProjectBySlug(slug);
+
+if (!project) return Astro.redirect('/portfolio');
+
+const nextProject = project.nextSlug
+  ? portfolio.find((p) => p.slug === project.nextSlug)
+  : undefined;
+
+---
+
+<BaseLayout
+  title={`${project.title} — Astro Studio`}
+  description={project.description}
+>
+  <Header />
+  <main>
+    <!-- Case hero -->
+    <section
+      class="pt-32 pb-16 section-padding"
+      style="background: var(--color-bg);"
+    >
+      <div class="container-site">
+        <!-- Back link -->
+        <a href="/portfolio" class="inline-flex items-center gap-2 text-[var(--color-fg-muted)] text-sm mb-8 hover:text-[var(--color-accent)] transition-colors">
+          ← Все проекты
+        </a>
+
+        <!-- Title + tags -->
+        <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-6 mb-8" data-reveal>
+          <div class="flex flex-col gap-3">
+            <span class="text-[10px] font-medium tracking-[0.25em] uppercase text-[var(--color-accent)]">Case Study</span>
+            <h1
+              class="font-light"
+              style="font-size: clamp(2rem, 5vw, 3.5rem); letter-spacing: -0.02em; color: var(--color-fg);"
+            >
+              {project.title}
+            </h1>
+            <div class="flex flex-wrap gap-2 mt-1">
+              {project.tags.map(tag => (
+                <span class="tag-chip">{tag}</span>
+              ))}
+            </div>
+          </div>
+
+          {project.liveUrl && (
+            <Button href={project.liveUrl} variant="secondary" size="sm" target="_blank">
+              Открыть сайт ↗
+            </Button>
+          )}
+        </div>
+
+        <!-- Hero with CSS scroll-driven parallax -->
+        <div class="case-hero relative overflow-hidden mb-16 rounded-xl border border-[var(--color-border)]" style="height: clamp(340px, 55vw, 640px);" data-reveal data-reveal-delay="100">
+          <div class="case-hero-img-wrap">
+            <img
+              src={project.image.src}
+              alt={project.title}
+              class="case-hero-img"
+              loading="eager"
+            />
+          </div>
+          <div class="absolute inset-0" style="background: linear-gradient(to bottom, transparent 40%, var(--color-bg) 100%);"></div>
+        </div>
+
+        <!-- Content grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+          <!-- Left column -->
+          <div class="lg:col-span-2 flex flex-col gap-12">
+
+            <div data-reveal>
+              <span class="accent-line"></span>
+              <h2 class="text-[var(--color-fg)] mb-4" style="font-size: 1.5rem; font-weight: 300;">О проекте</h2>
+              <p class="text-[var(--color-fg-muted)] leading-relaxed">{project.description}</p>
+            </div>
+
+            <div data-reveal>
+              <span class="accent-line"></span>
+              <h2 class="text-[var(--color-fg)] mb-4" style="font-size: 1.5rem; font-weight: 300;">Задача</h2>
+              <p class="text-[var(--color-fg-muted)] leading-relaxed">{project.goal}</p>
+            </div>
+
+            <div data-reveal>
+              <span class="accent-line"></span>
+              <h2 class="text-[var(--color-fg)] mb-4" style="font-size: 1.5rem; font-weight: 300;">Решение</h2>
+              <p class="text-[var(--color-fg-muted)] leading-relaxed">{project.solution}</p>
+            </div>
+
+            <!-- Gallery with CaseGallery lightbox -->
+            {(project.galleryDark ?? project.gallery).length > 0 && (
+              <div data-reveal>
+                <span class="accent-line"></span>
+                <h2 class="text-[var(--color-fg)] mb-6" style="font-size: 1.5rem; font-weight: 300;">Скриншоты</h2>
+                <CaseGallery
+                  client:visible
+                  images={(project.galleryDark ?? project.gallery).map((img, i) => ({
+                    src: img.src,
+                    alt: `${project.title} — скриншот ${i + 1}`,
+                  }))}
+                />
+              </div>
+            )}
+          </div>
+
+          <!-- Right column: meta -->
+          <div class="flex flex-col gap-8">
+
+            <!-- What we did -->
+            <div class="p-6 rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-warm)]" data-reveal>
+              <h3 class="text-[var(--color-fg)] font-medium mb-4 text-sm tracking-wide uppercase">Что сделали</h3>
+              <ul class="flex flex-col gap-2">
+                {project.whatWeDid.map(item => (
+                  <li class="flex items-start gap-2 text-[var(--color-fg-muted)] text-sm">
+                    <span class="text-[var(--color-accent)] mt-0.5 shrink-0">—</span>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <!-- Features -->
+            {project.features && project.features.length > 0 && (
+              <div class="p-6 rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-warm)]" data-reveal>
+                <h3 class="text-[var(--color-fg)] font-medium mb-4 text-sm tracking-wide uppercase">Особенности проекта</h3>
+                <div class="flex flex-wrap gap-2">
+                  {project.features.map(f => (
+                    <span class="tag-chip">{f}</span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <!-- Color palettes per theme -->
+            {(project.colorsDark || project.colorsLight || project.colors) && (
+              <div class="p-6 rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-warm)]" data-reveal>
+                <h3 class="text-[var(--color-fg)] font-medium mb-4 text-sm tracking-wide uppercase">Визуальная система</h3>
+
+                {project.colorsDark && (
+                  <div class={`colors-dark-block ${!project.colorsLight ? '' : ''}`}>
+                    {project.colorsLight && (
+                      <p class="text-[var(--color-fg-muted)] text-xs uppercase tracking-wider mb-2">Тёмная тема</p>
+                    )}
+                    <div class="flex gap-2 flex-wrap mb-4">
+                      {project.colorsDark.map(color => (
+                        <div
+                          class="color-swatch group relative"
+                          style={`background: ${color};`}
+                          title={color}
+                        >
+                          <span class="color-swatch-label">{color}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {project.colorsLight && (
+                  <div class="colors-light-block">
+                    <p class="text-[var(--color-fg-muted)] text-xs uppercase tracking-wider mb-2">Светлая тема</p>
+                    <div class="flex gap-2 flex-wrap">
+                      {project.colorsLight.map(color => (
+                        <div
+                          class="color-swatch group relative"
+                          style={`background: ${color};`}
+                          title={color}
+                        >
+                          <span class="color-swatch-label">{color}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {!project.colorsDark && !project.colorsLight && project.colors && (
+                  <div class="flex gap-2 flex-wrap">
+                    {project.colors.map(color => (
+                      <div
+                        class="color-swatch"
+                        style={`background: ${color};`}
+                        title={color}
+                      ></div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            <!-- Result -->
+            <div class="p-6 rounded-xl border border-[var(--color-accent)] bg-[var(--color-bg-warm)]" data-reveal>
+              <h3 class="text-[var(--color-accent)] font-medium mb-3 text-sm tracking-wide uppercase">Результат</h3>
+              <p class="text-[var(--color-fg-muted)] text-sm leading-relaxed">{project.result}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Next project -->
+    {nextProject && (
+      <section class="py-16 border-t border-[var(--color-border)]" style="background: var(--color-bg-warm);">
+        <div class="container-site flex flex-col md:flex-row items-center justify-between gap-6">
+          <div>
+            <span class="text-[var(--color-fg-muted)] text-xs uppercase tracking-[0.15em]">Следующий проект</span>
+            <p class="text-[var(--color-fg)] font-light mt-1" style="font-size: 1.5rem;">{nextProject.title}</p>
+          </div>
+          <Button href={`/portfolio/${nextProject.slug}`} variant="primary">
+            Смотреть →
+          </Button>
+        </div>
+      </section>
+    )}
+  </main>
+  <Footer />
+</BaseLayout>
+
+<style>
+  /* Parallax hero */
+  .case-hero { position: relative; }
+  .case-hero-img-wrap {
+    position: absolute; inset: -20%;
+    will-change: transform;
+  }
+  .case-hero-img { width: 100%; height: 100%; object-fit: cover; object-position: top; display: block; }
+
+  @supports (animation-timeline: scroll()) {
+    .case-hero-img-wrap {
+      animation: parallax-drift linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 50vh;
+    }
+    @keyframes parallax-drift {
+      from { transform: translateY(0); }
+      to   { transform: translateY(15%); }
+    }
+  }
+
+  .accent-line {
+    display: block;
+    width: 2.5rem;
+    height: 1px;
+    background: var(--color-accent);
+    margin-bottom: 1rem;
+  }
+
+  .tag-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.75rem;
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-fg-muted);
+  }
+
+  /* Color swatches */
+  .color-swatch {
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--color-border);
+    position: relative;
+    cursor: default;
+    transition: transform 200ms ease;
+  }
+  .color-swatch:hover {
+    transform: scale(1.15);
+    z-index: 1;
+  }
+  .color-swatch-label {
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--color-bg-dark);
+    color: var(--color-fg);
+    font-size: 0.625rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 150ms ease;
+  }
+  .color-swatch:hover .color-swatch-label {
+    opacity: 1;
+  }
+</style>
+

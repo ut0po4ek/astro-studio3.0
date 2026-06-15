@@ -1,0 +1,47 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/layout/Header.astro';
+import Footer from '../../components/layout/Footer.astro';
+import TagFilter from '../../components/portfolio/TagFilter';
+import { portfolio } from '../../data/portfolio';
+
+const allTags = [...new Set(portfolio.flatMap(p => p.tags))].sort();
+const projects = portfolio.map(p => ({
+  slug: p.slug,
+  title: p.title,
+  shortDescription: p.shortDescription,
+  tags: p.tags,
+  category: p.category ?? '',
+  image: { src: p.image.src },
+}));
+---
+
+<BaseLayout title="Портфолио — Astro Studio" description="Все проекты студии: сайты, лендинги и visual-решения.">
+  <Header />
+  <main>
+    <!-- Hero -->
+    <section class="section-padding relative overflow-hidden" style="background: var(--color-bg);">
+      <div class="orb orb-1" style="width:400px;height:400px;top:-80px;right:-80px;background:radial-gradient(ellipse,rgba(129,140,248,0.15) 0%,transparent 70%);" aria-hidden="true"></div>
+      <div class="absolute inset-0 bg-grid-pattern pointer-events-none" aria-hidden="true"></div>
+      <div class="container-site relative z-10">
+        <div class="max-w-2xl" data-reveal>
+          <span class="label-tag mb-4 block">Portfolio</span>
+          <h1 class="mb-4" style="font-size: clamp(2.5rem, 6vw, 4rem); font-weight: 200; letter-spacing: -0.03em; line-height: 1.05; color: var(--color-fg);">
+            Работы <span class="gradient-text">студии</span>
+          </h1>
+          <p style="color: var(--color-fg-muted); font-size: clamp(1rem, 1.5vw, 1.125rem); line-height: 1.7; max-width: 480px;">
+            Сайты, лендинги и visual-решения, которые мы создаём для брендов.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- TagFilter + Grid -->
+    <section class="section-padding" style="background: var(--color-bg);">
+      <div class="container-site">
+        <TagFilter client:load projects={projects} allTags={allTags} />
+      </div>
+    </section>
+  </main>
+  <Footer />
+</BaseLayout>
