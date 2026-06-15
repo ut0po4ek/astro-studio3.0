@@ -1,13 +1,22 @@
 ---
-import ProjectSlider from './ProjectSlider.astro';
+import ProjectSliderIsland from './ProjectSlider';
 import HeroText from './HeroText';
 import { siteConfig } from '../../config/site';
+import { getFeaturedProjects } from '../../data/portfolio';
 
 const statsItems = [
   { value: '4', label: 'проекта' },
   { value: '100%', label: 'адаптивность' },
   { value: '→', label: 'запуск под ключ' },
 ];
+
+const sliderProjects = getFeaturedProjects().map(p => ({
+  slug: p.slug,
+  title: p.title,
+  tags: p.tags,
+  image: { src: p.image.src },
+  liveUrl: p.liveUrl,
+}));
 ---
 
 <section
@@ -61,16 +70,8 @@ const statsItems = [
       </div>
 
       <!-- Right: slider -->
-      <div
-        class="relative"
-        data-reveal
-        data-reveal-delay="200"
-      >
-        <div
-          class="hero-offset-border absolute -top-4 -right-4 w-full h-full border border-[var(--color-border)] rounded-xl pointer-events-none"
-          aria-hidden="true"
-        ></div>
-        <ProjectSlider />
+      <div class="relative" data-reveal data-reveal-delay="200">
+        <ProjectSliderIsland client:load projects={sliderProjects} />
       </div>
     </div>
   </div>
