@@ -1,0 +1,25 @@
+---
+import SectionHeading from '../ui/SectionHeading.astro';
+import WhyStats from './WhyStats';
+
+const whyItems = [
+  { stat: '→', title: 'Под ключ', description: 'От идеи до запущенного сайта — без лишних согласований и ожидания.' },
+  { statNum: 100, statSuffix: '%', title: 'Адаптивность', description: 'Каждый проект идеально работает на любом устройстве и в любом браузере.' },
+  { stat: '∞', title: 'Внимание к деталям', description: 'Типографика, анимации, переходы — всё выверено до последнего пикселя.' },
+  { statNum: 4, title: 'Завершённых проекта', description: 'Реальные кейсы с живыми ссылками. Смотри, как выглядит результат.' },
+  { stat: '0', title: 'Generic-решений', description: 'Никаких шаблонов и конструкторов — только авторский дизайн под твою задачу.' },
+  { stat: '24h', title: 'Время ответа', description: 'Отвечаем на вопросы в рабочие дни. Держим тебя в курсе на каждом этапе.' },
+];
+---
+
+<section id="why" class="section-padding" style="background: var(--color-bg);">
+  <div class="container-site">
+    <SectionHeading
+      label="Почему мы"
+      title="Что делает нас другими"
+      subtitle="Работаем быстро, качественно и без воды."
+      class="mb-12"
+    />
+    <WhyStats client:visible items={whyItems} />
+  </div>
+</section>

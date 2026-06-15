@@ -1,0 +1,24 @@
+---
+import SectionHeading from '../ui/SectionHeading.astro';
+import ProcessSteps from './ProcessSteps';
+
+const steps = [
+  { number: '01', title: 'Бриф и анализ', description: 'Изучаем задачу, аудиторию и конкурентов. Определяем цели сайта и ключевые сценарии.' },
+  { number: '02', title: 'Дизайн', description: 'Проектируем структуру, создаём дизайн в Figma. Согласовываем и вносим правки.' },
+  { number: '03', title: 'Разработка', description: 'Верстаем адаптивный сайт, подключаем формы, анимации и интеграции.' },
+  { number: '04', title: 'Запуск', description: 'Тестируем, оптимизируем и запускаем. Передаём всё необходимое для дальнейшей работы.' },
+];
+---
+
+<section id="process" class="section-padding" style="background: var(--color-bg-dark);">
+  <div class="container-site">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-start">
+      <SectionHeading
+        label="Процесс"
+        title="Как мы работаем"
+        subtitle="Прозрачный процесс без неожиданностей — от брифа до запуска."
+      />
+      <ProcessSteps client:visible steps={steps} />
+    </div>
+  </div>
+</section>
