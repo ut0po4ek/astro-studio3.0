@@ -4,27 +4,61 @@ interface Props {
   title: string;
   subtitle?: string;
   align?: 'left' | 'center';
+  index?: string;
   class?: string;
 }
-const { label, title, subtitle, align = 'left', class: className = '' } = Astro.props;
+const { label, title, subtitle, align = 'left', index, class: className = '' } = Astro.props;
 const centerClass = align === 'center' ? 'text-center items-center' : '';
 ---
 
-<div class={`flex flex-col ${centerClass} ${className}`} data-reveal>
-  {label && (
-    <span class="label-tag text-[var(--color-accent)] text-xs font-medium tracking-[0.2em] uppercase mb-3">
-      {label}
+<div class={`flex flex-col ${centerClass} ${className}`} style="position: relative;" data-reveal>
+  {/* Giant faded background index number */}
+  {index && (
+    <span
+      aria-hidden="true"
+      style={`
+        position: absolute;
+        ${align === 'center' ? 'left: 50%; transform: translateX(-50%);' : 'left: -0.15em;'}
+        top: -0.35em;
+        font-size: clamp(6rem, 14vw, 12rem);
+        font-weight: 700;
+        letter-spacing: -0.06em;
+        line-height: 1;
+        background: var(--gradient-accent);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        opacity: 0.07;
+        pointer-events: none;
+        user-select: none;
+        white-space: nowrap;
+        z-index: 0;
+      `}
+    >
+      {index}
     </span>
   )}
-  <span class="accent-line" style={align === 'center' ? 'margin: 0 auto 1rem;' : ''}></span>
-  <h2 class="text-[var(--color-fg)] font-light leading-tight"
-      style="font-size: clamp(1.75rem, 4vw, 3rem); letter-spacing: -0.02em;">
-    {title}
-  </h2>
-  {subtitle && (
-    <p class="text-[var(--color-fg-muted)] text-base leading-relaxed mt-4 max-w-2xl"
-       style={align === 'center' ? 'margin: 1rem auto 0;' : ''}>
-      {subtitle}
-    </p>
-  )}
+
+  <div style="position: relative; z-index: 1;">
+    {label && (
+      <span class="label-tag text-[var(--color-accent)] text-xs font-medium tracking-[0.2em] uppercase mb-3 block">
+        {label}
+      </span>
+    )}
+    <span class="accent-line" style={align === 'center' ? 'margin: 0 auto 1rem;' : ''}></span>
+    <h2
+      class="text-[var(--color-fg)] font-light leading-tight"
+      style="font-size: clamp(1.75rem, 4vw, 3rem); letter-spacing: -0.02em;"
+    >
+      {title}
+    </h2>
+    {subtitle && (
+      <p
+        class="text-[var(--color-fg-muted)] text-base leading-relaxed mt-4 max-w-2xl"
+        style={align === 'center' ? 'margin: 1rem auto 0;' : ''}
+      >
+        {subtitle}
+      </p>
+    )}
+  </div>
 </div>

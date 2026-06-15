@@ -1,4 +1,5 @@
-import { motion, useReducedMotion } from 'framer-motion';
+import { useState } from 'react';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 
 interface Service {
   icon: string;
@@ -11,90 +12,173 @@ interface Props {
   services: Service[];
 }
 
-const container = {
-  hidden: {},
-  visible: { transition: { staggerChildren: 0.08 } },
-};
-
-const cardVariant = {
-  hidden: { opacity: 0, y: 30, scale: 0.97 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    transition: { duration: 0.6, ease: [0.34, 1.56, 0.64, 1] },
-  },
-};
-
 export default function ServiceCards({ services }: Props) {
+  const [active, setActive] = useState<number | null>(null);
   const prefersReduced = useReducedMotion();
 
   return (
-    <motion.div
-      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6"
-      variants={container}
-      initial={prefersReduced ? 'visible' : 'hidden'}
-      whileInView="visible"
-      viewport={{ once: true, margin: '-60px' }}
-    >
-      {services.map((service) => (
-        <motion.div
-          key={service.title}
-          variants={cardVariant}
-          whileHover={prefersReduced ? {} : { scale: 1.02, y: -3 }}
-          whileTap={prefersReduced ? {} : { scale: 0.98 }}
-          transition={{ type: 'spring', stiffness: 300, damping: 24 }}
-          className="group flex flex-col gap-4 p-8 rounded-xl"
-          style={{
-            background: 'var(--color-bg-elevated)',
-            border: '1px solid var(--color-border)',
-            cursor: 'default',
-            position: 'relative',
-            overflow: 'hidden',
-          }}
-        >
-          {/* Gradient hover overlay */}
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
+      {services.map((service, i) => {
+        const isOpen = active === i;
+        const num = String(i + 1).padStart(2, '0');
+
+        return (
           <motion.div
-            className="absolute inset-0 pointer-events-none"
-            style={{ background: 'var(--gradient-accent)', borderRadius: '0.75rem' }}
-            initial={{ opacity: 0 }}
-            whileHover={{ opacity: 0.05 }}
-            transition={{ duration: 0.4 }}
-          />
-
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'relative' }}>
-            <motion.span
-              className="text-2xl"
-              style={{ color: 'var(--color-border)', fontStyle: 'normal' }}
-              whileHover={{ rotate: 10 }}
-              transition={{ type: 'spring', stiffness: 400, damping: 20 }}
-              aria-hidden="true"
-            >
-              {service.icon}
-            </motion.span>
-            <span
-              className="tag-chip"
-              style={{ fontSize: '9px', letterSpacing: '0.1em', textTransform: 'uppercase' }}
-            >
-              {service.label}
-            </span>
-          </div>
-
-          <h3
-            className="font-medium"
-            style={{ fontSize: '1rem', color: 'var(--color-fg)', letterSpacing: 0, position: 'relative' }}
+            key={service.title}
+            initial={prefersReduced ? {} : { opacity: 0, x: -24 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: '-40px' }}
+            transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1], delay: i * 0.07 }}
           >
-            {service.title}
-          </h3>
+            <motion.button
+              onClick={() => setActive(isOpen ? null : i)}
+              style={{
+                display: 'grid',
+                gridTemplateColumns: '3.5rem 1fr auto',
+                alignItems: 'center',
+                gap: '1.5rem',
+                width: '100%',
+                padding: '1.5rem 0.75rem',
+                background: 'none',
+                border: 'none',
+                borderTop: '1px solid var(--color-border)',
+                cursor: 'pointer',
+                textAlign: 'left',
+                position: 'relative',
+                borderRadius: isOpen ? '0.5rem 0.5rem 0 0' : '0',
+              }}
+              whileHover={prefersReduced ? {} : { paddingLeft: '1.25rem' }}
+              transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            >
+              {/* Hover background */}
+              <motion.div
+                style={{
+                  position: 'absolute',
+                  inset: 0,
+                  background: 'linear-gradient(90deg, rgba(129,140,248,0.06) 0%, transparent 100%)',
+                  opacity: 0,
+                  borderRadius: '0.5rem',
+                  pointerEvents: 'none',
+                }}
+                whileHover={{ opacity: 1 }}
+                transition={{ duration: 0.25 }}
+              />
 
-          <p
-            className="text-sm leading-relaxed"
-            style={{ color: 'var(--color-fg-muted)', position: 'relative' }}
-          >
-            {service.description}
-          </p>
-        </motion.div>
-      ))}
-    </motion.div>
+              {/* Number */}
+              <span
+                style={{
+                  fontSize: 'clamp(1.75rem, 3vw, 2.25rem)',
+                  fontWeight: 200,
+                  letterSpacing: '-0.05em',
+                  lineHeight: 1,
+                  background: isOpen ? 'var(--gradient-accent)' : undefined,
+                  WebkitBackgroundClip: isOpen ? 'text' : undefined,
+                  WebkitTextFillColor: isOpen ? 'transparent' : undefined,
+                  backgroundClip: isOpen ? 'text' : undefined,
+                  color: isOpen ? 'transparent' : 'var(--color-fg-subtle)',
+                  transition: 'color 0.3s ease',
+                  position: 'relative',
+                  fontVariantNumeric: 'tabular-nums',
+                }}
+                aria-hidden="true"
+              >
+                {num}
+              </span>
+
+              {/* Title + label */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem', position: 'relative' }}>
+                <span
+                  style={{
+                    fontSize: 'clamp(1rem, 1.8vw, 1.25rem)',
+                    fontWeight: 400,
+                    color: isOpen ? 'var(--color-accent)' : 'var(--color-fg)',
+                    letterSpacing: '-0.015em',
+                    lineHeight: 1.2,
+                    transition: 'color 0.3s ease',
+                  }}
+                >
+                  {service.title}
+                </span>
+                <span
+                  style={{
+                    fontSize: '9px',
+                    letterSpacing: '0.2em',
+                    textTransform: 'uppercase',
+                    color: 'var(--color-fg-subtle)',
+                    fontWeight: 500,
+                  }}
+                >
+                  {service.label}
+                </span>
+              </div>
+
+              {/* Plus/minus */}
+              <motion.span
+                animate={{ rotate: isOpen ? 45 : 0 }}
+                transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '2rem',
+                  height: '2rem',
+                  borderRadius: '50%',
+                  border: isOpen
+                    ? '1px solid var(--color-accent)'
+                    : '1px solid var(--color-border)',
+                  color: isOpen ? 'var(--color-accent)' : 'var(--color-fg-muted)',
+                  fontSize: '1.25rem',
+                  fontWeight: 200,
+                  lineHeight: 1,
+                  flexShrink: 0,
+                  transition: 'border-color 0.3s, color 0.3s',
+                  position: 'relative',
+                }}
+                aria-hidden="true"
+              >
+                +
+              </motion.span>
+            </motion.button>
+
+            {/* Expanded description */}
+            <AnimatePresence initial={false}>
+              {isOpen && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                  style={{ overflow: 'hidden' }}
+                >
+                  <div
+                    style={{
+                      paddingLeft: '5.75rem',
+                      paddingBottom: '1.75rem',
+                      paddingRight: '1rem',
+                      background: 'linear-gradient(90deg, rgba(129,140,248,0.03) 0%, transparent 80%)',
+                      borderRadius: '0 0 0.5rem 0.5rem',
+                    }}
+                  >
+                    <p
+                      style={{
+                        fontSize: '0.9375rem',
+                        color: 'var(--color-fg-muted)',
+                        lineHeight: 1.8,
+                        maxWidth: '520px',
+                      }}
+                    >
+                      {service.description}
+                    </p>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
+        );
+      })}
+
+      {/* Bottom border */}
+      <div style={{ borderTop: '1px solid var(--color-border)' }} />
+    </div>
   );
 }
