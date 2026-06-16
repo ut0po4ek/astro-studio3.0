@@ -47,8 +47,8 @@ export default function ServiceCards({ services }: Props) {
                 position: 'relative',
                 borderRadius: isOpen ? '0.5rem 0.5rem 0 0' : '0',
               }}
-              whileHover={prefersReduced ? {} : { paddingLeft: '1.25rem' }}
-              transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+              whileHover={prefersReduced ? {} : { x: 14 }}
+              transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
             >
               {/* Hover background */}
               <motion.div

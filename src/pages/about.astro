@@ -5,6 +5,13 @@ import Footer from '../components/layout/Footer.astro';
 import SectionHeading from '../components/ui/SectionHeading.astro';
 import Button from '../components/ui/Button.astro';
 import WhyStats from '../components/sections/WhyStats';
+import { getFeaturedProjects } from '../data/portfolio';
+
+const previewProjects = getFeaturedProjects().map(p => ({
+  src: p.image.src,
+  title: p.title,
+  href: `/portfolio/${p.slug}`,
+}));
 
 const values = [
   { label: 'Эстетика', desc: 'Каждый экран — продуманный визуальный образ, не просто вёрстка.' },
@@ -146,21 +153,28 @@ const process = [
         <div class="flex flex-col gap-0">
           {process.map((step, i) => (
             <div
-              class="process-step group grid grid-cols-1 md:grid-cols-[3rem_1fr] gap-4 md:gap-8 py-8 border-b border-[var(--color-border)] last:border-0"
+              class="process-step group relative grid grid-cols-1 md:grid-cols-[3rem_1fr] gap-4 md:gap-8 py-8 border-b border-[var(--color-border)] last:border-0 about-process-step"
+              style="transition: background-color 450ms cubic-bezier(0.16,1,0.3,1), padding-left 450ms cubic-bezier(0.16,1,0.3,1); border-radius: 0.5rem; cursor: default;"
               data-reveal={i % 2 === 0 ? 'left' : 'right'}
               data-reveal-delay={i * 80}
               data-process-index={i}
             >
+              {/* Left accent bar — grows on hover */}
               <span
-                class="process-num font-light transition-colors duration-300 group-hover:text-[var(--color-accent)]"
-                style="font-size: clamp(1.25rem, 3vw, 1.75rem); letter-spacing: -0.03em; color: var(--color-border);"
+                class="about-step-bar"
+                aria-hidden="true"
+                style="position: absolute; left: 0; top: 0.5rem; bottom: 0.5rem; width: 2px; border-radius: 2px; background: var(--gradient-accent); opacity: 0; transform: scaleY(0); transform-origin: top; transition: opacity 400ms ease, transform 450ms cubic-bezier(0.16,1,0.3,1);"
+              />
+              <span
+                class="process-num font-light"
+                style="font-size: clamp(1.25rem, 3vw, 1.75rem); letter-spacing: -0.03em; color: var(--color-border); transition: color 400ms ease, transform 400ms cubic-bezier(0.16,1,0.3,1); display: block;"
               >
                 {step.num}
               </span>
               <div class="flex flex-col gap-2">
                 <h3
-                  class="text-[var(--color-fg)] font-medium transition-colors duration-300 group-hover:text-[var(--color-accent)]"
-                  style="font-size: 1rem; letter-spacing: 0;"
+                  class="text-[var(--color-fg)] font-medium about-step-title"
+                  style="font-size: 1rem; letter-spacing: 0; transition: color 400ms ease;"
                 >
                   {step.title}
                 </h3>
@@ -218,17 +232,12 @@ const process = [
           </Button>
         </div>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-3" data-reveal>
-          {[
-            { src: '/portfolio/photographer.png', title: 'Photographer', href: '/portfolio/photographer' },
-            { src: '/portfolio/piccolino.png', title: 'Piccolino', href: '/portfolio/piccolino' },
-            { src: '/portfolio/flowers.png', title: 'Flowers', href: '/portfolio/flowers' },
-            { src: '/portfolio/form-light.png', title: 'Form Light', href: '/portfolio/form-light' },
-          ].map(item => (
-            <a href={item.href} class="group aspect-video overflow-hidden rounded-lg border border-[var(--color-border)] hover:border-[var(--color-accent)] transition-colors duration-300">
+          {previewProjects.map(item => (
+            <a href={item.href} class="group aspect-video overflow-hidden rounded-lg border border-[var(--color-border)] hover:border-[var(--color-accent)] transition-all duration-500">
               <img
                 src={item.src}
                 alt={item.title}
-                class="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
+                class="w-full h-full object-cover object-top transition-transform duration-500 ease-out group-hover:scale-105"
                 loading="lazy"
               />
             </a>
@@ -263,6 +272,23 @@ const process = [
 <style>
   .stat-number {
     font-variant-numeric: tabular-nums;
+  }
+
+  /* Process step hover — about page */
+  .about-process-step:hover {
+    background-color: var(--color-bg-elevated);
+    padding-left: 1.25rem;
+  }
+  .about-process-step:hover .about-step-bar {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+  .about-process-step:hover .process-num {
+    color: var(--color-accent) !important;
+    transform: translateY(-2px);
+  }
+  .about-process-step:hover .about-step-title {
+    color: var(--color-accent);
   }
 
   /* Floating subtle background shapes for visual interest */

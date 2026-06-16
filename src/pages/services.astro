@@ -85,7 +85,7 @@ const faqs = [
   <main>
 
     <!-- Hero -->
-    <section class="pt-32 pb-20 section-padding" style="background: var(--color-bg);">
+    <section class="pt-32 pb-10 section-padding" style="background: var(--color-bg);">
       <div class="container-site max-w-4xl">
         <span class="text-[10px] font-medium tracking-[0.25em] uppercase text-[var(--color-accent)] mb-4 block" data-reveal>
           Services
@@ -122,12 +122,16 @@ const faqs = [
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {serviceTypes.map((s, i) => (
             <div
-              class="flex flex-col gap-4 p-6 rounded-xl border border-[var(--color-border)] hover:border-[var(--color-accent)] transition-colors duration-300"
+              class="group flex flex-col gap-4 p-6 rounded-xl border border-[var(--color-border)] service-format-card"
+              style="transition: border-color 500ms cubic-bezier(0.16,1,0.3,1), background-color 500ms cubic-bezier(0.16,1,0.3,1), box-shadow 500ms cubic-bezier(0.16,1,0.3,1); cursor: default;"
               data-reveal="flip-3d"
               data-reveal-delay={i * 80}
             >
               <div class="flex items-start justify-between gap-4">
-                <h3 class="text-[var(--color-fg)] font-medium" style="font-size: 1.0625rem; letter-spacing: 0;">{s.title}</h3>
+                <h3
+                  class="text-[var(--color-fg)] font-medium transition-colors"
+                  style="font-size: 1.0625rem; letter-spacing: 0; transition-duration: 500ms;"
+                >{s.title}</h3>
                 <span class="tag-chip shrink-0">{s.label}</span>
               </div>
               <p class="text-[var(--color-fg-muted)] text-sm leading-relaxed">{s.desc}</p>

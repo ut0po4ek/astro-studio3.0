@@ -19,12 +19,12 @@ const projects = portfolio.map(p => ({
 <BaseLayout title="Портфолио — Astro Studio" description="Все проекты студии: сайты, лендинги и visual-решения.">
   <Header />
   <main>
-    <!-- Hero -->
-    <section class="section-padding relative overflow-hidden" style="background: var(--color-bg);">
+    <!-- Hero + TagFilter + Grid — one section to eliminate double padding -->
+    <section class="relative overflow-hidden" style="background: var(--color-bg); padding-top: clamp(6rem, 14vw, 9rem); padding-bottom: clamp(3rem, 8vw, 6rem);">
       <div class="orb orb-1" style="width:400px;height:400px;top:-80px;right:-80px;background:radial-gradient(ellipse,rgba(129,140,248,0.15) 0%,transparent 70%);" aria-hidden="true"></div>
       <div class="absolute inset-0 bg-grid-pattern pointer-events-none" aria-hidden="true"></div>
       <div class="container-site relative z-10">
-        <div class="max-w-2xl" data-reveal>
+        <div class="max-w-2xl mb-10" data-reveal>
           <span class="label-tag mb-4 block">Portfolio</span>
           <h1 class="mb-4" style="font-size: clamp(2.5rem, 6vw, 4rem); font-weight: 200; letter-spacing: -0.03em; line-height: 1.05; color: var(--color-fg);">
             Работы <span class="gradient-text">студии</span>
@@ -33,12 +33,6 @@ const projects = portfolio.map(p => ({
             Сайты, лендинги и visual-решения, которые мы создаём для брендов.
           </p>
         </div>
-      </div>
-    </section>
-
-    <!-- TagFilter + Grid -->
-    <section class="section-padding" style="background: var(--color-bg);">
-      <div class="container-site">
         <TagFilter client:load projects={projects} allTags={allTags} />
       </div>
     </section>

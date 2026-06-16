@@ -697,8 +697,8 @@ html:not(.js) .reveal {
   display: flex;
   width: max-content;
   animation: marquee 28s linear infinite;
+  /* Never pause — hover adds a visual glow instead */
 }
-.marquee-track:hover { animation-play-state: paused; }
 
 @keyframes marquee-reverse {
   0%   { transform: translateX(-50%); }
@@ -709,7 +709,27 @@ html:not(.js) .reveal {
   width: max-content;
   animation: marquee-reverse 32s linear infinite;
 }
-.marquee-track-reverse:hover { animation-play-state: paused; }
+
+/* Hover: subtle glow overlay on the marquee container, strip continues scrolling */
+.scroll-line-occluder {
+  position: relative;
+}
+.scroll-line-occluder::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 50%, rgba(129,140,248,0.07) 0%, transparent 70%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 500ms ease;
+  z-index: 4;
+}
+.scroll-line-occluder:hover::after {
+  opacity: 1;
+}
+[data-theme="light"] .scroll-line-occluder::after {
+  background: radial-gradient(ellipse at 50% 50%, rgba(79,70,229,0.07) 0%, transparent 70%);
+}
 
 /* Portfolio card hover */
 .portfolio-card {
@@ -857,6 +877,16 @@ html:not(.js) .reveal {
 [data-theme="light"] .portfolio-card:hover {
   border-color: rgba(79,70,229,0.25);
   box-shadow: 0 20px 60px rgba(79,70,229,0.08);
+}
+
+/* Service format cards ("Какой сайт вам нужен") */
+.service-format-card:hover {
+  border-color: var(--color-accent);
+  background-color: var(--color-bg-elevated);
+  box-shadow: 0 12px 36px rgba(129,140,248,0.10);
+}
+[data-theme="light"] .service-format-card:hover {
+  box-shadow: 0 12px 36px rgba(79,70,229,0.08);
 }
 
 /* tag-chip active/hover */

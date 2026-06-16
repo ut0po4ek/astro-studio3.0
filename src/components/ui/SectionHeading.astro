@@ -11,24 +11,28 @@ const { label, title, subtitle, align = 'left', index, class: className = '' } =
 const centerClass = align === 'center' ? 'text-center items-center' : '';
 ---
 
-<div class={`flex flex-col ${centerClass} ${className}`} style="position: relative;" data-reveal>
-  {/* Giant faded background index number */}
+<div
+  class={`flex flex-col ${centerClass} ${className}`}
+  style="position: relative; overflow: hidden;"
+  data-reveal
+>
+  {/* Giant faded background index number — clipped to this wrapper */}
   {index && (
     <span
       aria-hidden="true"
       style={`
         position: absolute;
-        ${align === 'center' ? 'left: 50%; transform: translateX(-50%);' : 'left: -0.15em;'}
-        top: -0.35em;
-        font-size: clamp(6rem, 14vw, 12rem);
-        font-weight: 700;
+        ${align === 'center' ? 'left: 50%; transform: translateX(-50%);' : 'left: -0.1em;'}
+        bottom: -0.15em;
+        font-size: clamp(5rem, 12vw, 10rem);
+        font-weight: 800;
         letter-spacing: -0.06em;
         line-height: 1;
         background: var(--gradient-accent);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
-        opacity: 0.07;
+        opacity: 0.08;
         pointer-events: none;
         user-select: none;
         white-space: nowrap;

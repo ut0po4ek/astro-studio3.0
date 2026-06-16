@@ -62,12 +62,20 @@ export default function WhyStats({ items }: Props) {
         <motion.div
           key={w.title}
           variants={item}
+          className="why-card"
           style={{
             padding: '1.5rem 1.75rem', borderRadius: '0.75rem',
             background: 'var(--color-bg-elevated)',
             border: '1px solid var(--color-border)',
             display: 'flex', flexDirection: 'column', gap: '0.75rem',
+            cursor: 'default',
+            transition: 'border-color 400ms cubic-bezier(0.16,1,0.3,1), box-shadow 400ms cubic-bezier(0.16,1,0.3,1)',
           }}
+          whileHover={prefersReduced ? {} : {
+            y: -6,
+            boxShadow: '0 16px 40px rgba(129,140,248,0.14)',
+          }}
+          transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
         >
           {w.statNum !== undefined && (
             <div

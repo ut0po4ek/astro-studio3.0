@@ -5,6 +5,12 @@ import Footer from '../components/layout/Footer.astro';
 import ContactSection from '../components/sections/ContactSection.astro';
 import Icon from '../components/ui/Icon.astro';
 import { siteConfig } from '../config/site';
+import { getFeaturedProjects } from '../data/portfolio';
+
+const previewProjects = getFeaturedProjects().map(p => ({
+  src: p.image.src,
+  href: `/portfolio/${p.slug}`,
+}));
 
 const channels = [
   {
@@ -98,7 +104,7 @@ const faqs = [
                 <span class="text-[var(--color-fg)] font-medium text-sm">{ch.title}</span>
               </div>
               <p class="text-[var(--color-fg-muted)] text-sm leading-relaxed">{ch.desc}</p>
-              <span class="text-[var(--color-accent)] text-xs font-medium tracking-wide uppercase flex items-center gap-1 mt-auto group-hover:gap-2 transition-all duration-300">
+              <span class="text-[var(--color-accent)] text-xs font-medium tracking-wide uppercase flex items-center gap-1 mt-auto group-hover:gap-2 group-hover:underline transition-all duration-300" style="text-underline-offset: 3px;">
                 {ch.label} →
               </span>
             </a>
@@ -164,17 +170,12 @@ const faqs = [
       <div class="container-site">
         <p class="label-tag mb-6 text-center" data-reveal>Посмотрите, что мы делаем</p>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-3" data-reveal data-reveal-delay="100">
-          {[
-            { src: '/portfolio/photographer.png', href: '/portfolio/photographer' },
-            { src: '/portfolio/piccolino.png', href: '/portfolio/piccolino' },
-            { src: '/portfolio/flowers.png', href: '/portfolio/flowers' },
-            { src: '/portfolio/form-light.png', href: '/portfolio/form-light' },
-          ].map(item => (
-            <a href={item.href} class="group aspect-video overflow-hidden rounded-lg border border-[var(--color-border)] hover:border-[var(--color-accent)] transition-colors duration-300">
+          {previewProjects.map(item => (
+            <a href={item.href} class="group aspect-video overflow-hidden rounded-lg border border-[var(--color-border)] hover:border-[var(--color-accent)] transition-all duration-500">
               <img
                 src={item.src}
                 alt="Проект"
-                class="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
+                class="w-full h-full object-cover object-top transition-transform duration-500 ease-out group-hover:scale-105"
                 loading="lazy"
               />
             </a>
