@@ -45,7 +45,6 @@ export default function ServiceCards({ services }: Props) {
                 cursor: 'pointer',
                 textAlign: 'left',
                 position: 'relative',
-                borderRadius: isOpen ? '0.5rem 0.5rem 0 0' : '0',
               }}
               whileHover={prefersReduced ? {} : { x: 14 }}
               transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
@@ -76,7 +75,7 @@ export default function ServiceCards({ services }: Props) {
                   WebkitTextFillColor: isOpen ? 'transparent' : undefined,
                   backgroundClip: isOpen ? 'text' : undefined,
                   color: isOpen ? 'transparent' : 'var(--color-fg-subtle)',
-                  transition: 'color 0.3s ease',
+                  transition: 'color 0.35s ease',
                   position: 'relative',
                   fontVariantNumeric: 'tabular-nums',
                 }}
@@ -85,37 +84,45 @@ export default function ServiceCards({ services }: Props) {
                 {num}
               </span>
 
-              {/* Title + label */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem', position: 'relative' }}>
-                <span
-                  style={{
-                    fontSize: 'clamp(1rem, 1.8vw, 1.25rem)',
-                    fontWeight: 400,
-                    color: isOpen ? 'var(--color-accent)' : 'var(--color-fg)',
-                    letterSpacing: '-0.015em',
-                    lineHeight: 1.2,
-                    transition: 'color 0.3s ease',
-                  }}
-                >
-                  {service.title}
-                </span>
-                <span
-                  style={{
-                    fontSize: '9px',
-                    letterSpacing: '0.2em',
-                    textTransform: 'uppercase',
-                    color: 'var(--color-fg-subtle)',
-                    fontWeight: 500,
-                  }}
-                >
-                  {service.label}
-                </span>
+              {/* Title + label badge on same line */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', position: 'relative' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', flexWrap: 'wrap' }}>
+                  <span
+                    style={{
+                      fontSize: 'clamp(1rem, 1.8vw, 1.2rem)',
+                      fontWeight: 400,
+                      color: isOpen ? 'var(--color-accent)' : 'var(--color-fg)',
+                      letterSpacing: '-0.015em',
+                      lineHeight: 1.2,
+                      transition: 'color 0.35s ease',
+                    }}
+                  >
+                    {service.title}
+                  </span>
+                  <span
+                    style={{
+                      fontSize: '8px',
+                      letterSpacing: '0.18em',
+                      textTransform: 'uppercase',
+                      fontWeight: 600,
+                      color: isOpen ? 'var(--color-accent)' : 'var(--color-fg-subtle)',
+                      background: isOpen ? 'rgba(129,140,248,0.12)' : 'transparent',
+                      padding: '2px 7px',
+                      borderRadius: '100px',
+                      border: `1px solid ${isOpen ? 'rgba(129,140,248,0.3)' : 'var(--color-border)'}`,
+                      transition: 'color 0.35s ease, background 0.35s ease, border-color 0.35s ease',
+                      lineHeight: '1.6',
+                    }}
+                  >
+                    {service.label}
+                  </span>
+                </div>
               </div>
 
-              {/* Plus/minus */}
+              {/* Toggle icon — SVG + perfectly centered */}
               <motion.span
                 animate={{ rotate: isOpen ? 45 : 0 }}
-                transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                transition={{ duration: 0.38, ease: [0.16, 1, 0.3, 1] }}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
@@ -127,48 +134,68 @@ export default function ServiceCards({ services }: Props) {
                     ? '1px solid var(--color-accent)'
                     : '1px solid var(--color-border)',
                   color: isOpen ? 'var(--color-accent)' : 'var(--color-fg-muted)',
-                  fontSize: '1.25rem',
-                  fontWeight: 200,
-                  lineHeight: 1,
                   flexShrink: 0,
-                  transition: 'border-color 0.3s, color 0.3s',
+                  transition: 'border-color 0.35s ease, color 0.35s ease',
                   position: 'relative',
                 }}
                 aria-hidden="true"
               >
-                +
+                <svg
+                  width="11"
+                  height="11"
+                  viewBox="0 0 11 11"
+                  fill="none"
+                  aria-hidden="true"
+                  style={{ display: 'block', flexShrink: 0 }}
+                >
+                  <line x1="5.5" y1="1" x2="5.5" y2="10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                  <line x1="1" y1="5.5" x2="10" y2="5.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                </svg>
               </motion.span>
             </motion.button>
 
-            {/* Expanded description */}
+            {/* Expanded description — aligned to title column via same grid */}
             <AnimatePresence initial={false}>
               {isOpen && (
                 <motion.div
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: 'auto', opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                  transition={{ duration: 0.42, ease: [0.16, 1, 0.3, 1] }}
                   style={{ overflow: 'hidden' }}
                 >
                   <div
                     style={{
-                      paddingLeft: '5.75rem',
-                      paddingBottom: '1.75rem',
-                      paddingRight: '1rem',
-                      background: 'linear-gradient(90deg, rgba(129,140,248,0.03) 0%, transparent 80%)',
-                      borderRadius: '0 0 0.5rem 0.5rem',
+                      display: 'grid',
+                      gridTemplateColumns: '3.5rem 1fr 3rem',
+                      gap: '1.5rem',
+                      padding: '0.25rem 0.75rem 2rem',
                     }}
                   >
+                    {/* Accent dot aligned with number column */}
+                    <div style={{ display: 'flex', justifyContent: 'flex-start', paddingTop: '0.3rem' }}>
+                      <span style={{
+                        display: 'block',
+                        width: '4px',
+                        height: '4px',
+                        borderRadius: '50%',
+                        background: 'var(--gradient-accent)',
+                        flexShrink: 0,
+                      }} />
+                    </div>
+                    {/* Description aligned with title */}
                     <p
                       style={{
-                        fontSize: '0.9375rem',
+                        fontSize: '0.875rem',
                         color: 'var(--color-fg-muted)',
-                        lineHeight: 1.8,
-                        maxWidth: '520px',
+                        lineHeight: 1.85,
+                        margin: 0,
                       }}
                     >
                       {service.description}
                     </p>
+                    {/* Spacer for toggle column */}
+                    <div />
                   </div>
                 </motion.div>
               )}
