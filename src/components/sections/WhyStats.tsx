@@ -13,7 +13,7 @@ function AnimatedNumber({ to, suffix = '' }: { to: number; suffix?: string }) {
       count.set(to);
       return;
     }
-    const controls = animate(count, to, { duration: 1.4, ease: [0.16, 1, 0.3, 1] });
+    const controls = animate(count, to, { duration: 1.6, ease: [0.16, 1, 0.3, 1] });
     return controls.stop;
   }, [isInView, to, count, prefersReduced]);
 
@@ -37,67 +37,95 @@ interface Props {
   items: WhyItem[];
 }
 
-const container = {
-  hidden: {},
-  visible: { transition: { staggerChildren: 0.07 } },
-};
-
-const item = {
-  hidden: { opacity: 0, scale: 0.95, y: 20 },
-  visible: { opacity: 1, scale: 1, y: 0, transition: { duration: 0.55, ease: [0.16, 1, 0.3, 1] } },
-};
-
 export default function WhyStats({ items }: Props) {
   const prefersReduced = useReducedMotion();
 
   return (
-    <motion.div
-      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6"
-      variants={container}
-      initial={prefersReduced ? 'visible' : 'hidden'}
-      whileInView="visible"
-      viewport={{ once: true, margin: '-60px' }}
-    >
-      {items.map((w) => (
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
+      {items.map((w, i) => (
         <motion.div
           key={w.title}
-          variants={item}
-          className="why-card"
+          className="group"
           style={{
-            padding: '1.5rem 1.75rem', borderRadius: '0.75rem',
-            background: 'var(--color-bg-elevated)',
-            border: '1px solid var(--color-border)',
-            display: 'flex', flexDirection: 'column', gap: '0.75rem',
+            display: 'grid',
+            gridTemplateColumns: '7rem 1fr',
+            gap: '2rem',
+            alignItems: 'start',
+            padding: '1.75rem 0.5rem',
+            borderTop: '1px solid var(--color-border)',
             cursor: 'default',
-            transition: 'border-color 400ms cubic-bezier(0.16,1,0.3,1), box-shadow 400ms cubic-bezier(0.16,1,0.3,1)',
+            position: 'relative',
+            overflow: 'hidden',
           }}
-          whileHover={prefersReduced ? {} : {
-            y: -6,
-            boxShadow: '0 16px 40px rgba(129,140,248,0.14)',
-          }}
-          transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+          initial={prefersReduced ? {} : { opacity: 0, x: i % 2 === 0 ? -44 : 44, y: 8 }}
+          whileInView={{ opacity: 1, x: 0, y: 0 }}
+          viewport={{ once: true, margin: '-40px' }}
+          transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1], delay: i * 0.07 }}
         >
-          {w.statNum !== undefined && (
-            <div
+          {/* Hover bg */}
+          <motion.div
+            aria-hidden="true"
+            style={{
+              position: 'absolute',
+              inset: 0,
+              background: 'linear-gradient(90deg, rgba(129,140,248,0.05) 0%, transparent 60%)',
+              opacity: 0,
+              pointerEvents: 'none',
+            }}
+            whileHover={{ opacity: 1 }}
+            transition={{ duration: 0.25 }}
+          />
+
+          {/* Stat */}
+          <div
+            style={{
+              fontSize: 'clamp(1.75rem, 3vw, 2.5rem)',
+              fontWeight: 200,
+              letterSpacing: '-0.04em',
+              lineHeight: 1,
+              background: 'var(--gradient-accent)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+              position: 'relative',
+              zIndex: 1,
+              paddingTop: '0.125rem',
+            }}
+          >
+            {w.statNum !== undefined ? (
+              <AnimatedNumber to={w.statNum} suffix={w.statSuffix ?? ''} />
+            ) : (
+              w.stat ?? ''
+            )}
+          </div>
+
+          {/* Title + description */}
+          <div style={{ position: 'relative', zIndex: 1 }}>
+            <h3
               style={{
-                fontSize: 'clamp(1.75rem, 3vw, 2.25rem)', fontWeight: 200,
-                letterSpacing: '-0.03em', lineHeight: 1,
-                background: 'var(--gradient-accent)',
-                WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
+                fontSize: 'clamp(0.9375rem, 1.4vw, 1.05rem)',
+                fontWeight: 500,
+                color: 'var(--color-fg)',
+                marginBottom: '0.4rem',
+                letterSpacing: '-0.01em',
               }}
             >
-              <AnimatedNumber to={w.statNum} suffix={w.statSuffix ?? ''} />
-            </div>
-          )}
-          {w.stat && !w.statNum && (
-            <div style={{ fontSize: '1.75rem', fontWeight: 200, background: 'var(--gradient-accent)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
-              {w.stat}
-            </div>
-          )}
-          <h3 style={{ fontSize: '0.9375rem', fontWeight: 500, color: 'var(--color-fg)' }}>{w.title}</h3>
-          <p style={{ fontSize: '0.8125rem', color: 'var(--color-fg-muted)', lineHeight: 1.65 }}>{w.description}</p>
+              {w.title}
+            </h3>
+            <p
+              style={{
+                fontSize: '0.8125rem',
+                color: 'var(--color-fg-muted)',
+                lineHeight: 1.7,
+                maxWidth: '38ch',
+              }}
+            >
+              {w.description}
+            </p>
+          </div>
         </motion.div>
       ))}
-    </motion.div>
+      <div style={{ borderTop: '1px solid var(--color-border)' }} />
+    </div>
   );
 }

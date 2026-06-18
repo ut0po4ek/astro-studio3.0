@@ -1,0 +1,200 @@
+---
+/**
+ * PageHeroCanvas — Atmospheric WebGL shader for inner-page hero sections.
+ * Deep indigo/violet smoke, domain-warped simplex noise, no mouse interaction.
+ * Fades in after first frame to avoid flash; pauses off-screen; cleans up on
+ * Astro view transitions.
+ *
+ * Usage:
+ *   <PageHeroCanvas />
+ *   Position absolutely inside `relative overflow-hidden` hero section.
+ */
+const uid = 'phc-' + Math.random().toString(36).slice(2, 9);
+---
+
+<canvas
+  id={uid}
+  class="page-hero-canvas"
+  aria-hidden="true"
+></canvas>
+
+<style>
+  .page-hero-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0;
+    transition: opacity 0.8s ease;
+    /* Matched to clearColor to avoid blank-frame flash */
+    background: #000003;
+  }
+  .page-hero-canvas.phc-visible {
+    opacity: 1;
+  }
+</style>
+
+<script define:vars={{ uid }}>
+(function () {
+  /* ── GLSL ─────────────────────────────────────────────── */
+  const VERT = `
+    attribute vec2 a_pos;
+    void main() { gl_Position = vec4(a_pos, 0.0, 1.0); }
+  `;
+
+  const FRAG = `
+    precision highp float;
+    uniform vec2  u_res;
+    uniform float u_t;
+
+    /*
+     * Concentric rings — Ali Imam / 21st.dev adaptation.
+     * Full-spectrum RGB channel separation creates iridescent color fringing.
+     * Dark (near-black) between rings; bright glowing rings on animation.
+     */
+    void main(void) {
+      vec2 uv = (gl_FragCoord.xy * 2.0 - u_res.xy) / min(u_res.x, u_res.y);
+
+      /* Match original aliimam speed: 0.05/frame @ 60fps ≈ 3/s → * 0.05 = 0.15/s */
+      float t = u_t * 0.15;
+      float lw = 0.005;
+
+      vec3 color = vec3(0.0);
+      for (int j = 0; j < 3; j++) {
+        for (int i = 0; i < 5; i++) {
+          float fi = float(i);
+          float fj = float(j);
+          color[j] += lw * fi * fi /
+            abs(
+              fract(t - 0.01 * fj + fi * 0.01) * 5.0
+              - length(uv)
+              + mod(uv.x + uv.y, 0.2)
+            );
+        }
+      }
+
+      gl_FragColor = vec4(clamp(color, 0.0, 1.0), 1.0);
+    }
+  `;
+
+  /* ── Palette — ring-shader uses no colour uniforms, only clearColor ── */
+  const PALETTE = {
+    cc:  [0.0, 0.0, 0.0, 1.0],
+    bg:  '#000003',
+  };
+
+  function boot() {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      const cv = document.getElementById(uid);
+      if (cv) { cv.style.opacity = '0'; cv.style.display = 'none'; }
+      return;
+    }
+
+    const canvas = document.getElementById(uid);
+    if (!canvas || canvas.dataset.glBound === 'true') return;
+    canvas.dataset.glBound = 'true';
+
+    const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+    if (!gl) { canvas.remove(); return; }
+
+    function mkShader(type, src) {
+      const s = gl.createShader(type);
+      gl.shaderSource(s, src);
+      gl.compileShader(s);
+      if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
+        console.warn('[PageHeroCanvas]', gl.getShaderInfoLog(s));
+        return null;
+      }
+      return s;
+    }
+
+    const vs = mkShader(gl.VERTEX_SHADER, VERT);
+    const fs = mkShader(gl.FRAGMENT_SHADER, FRAG);
+    if (!vs || !fs) return;
+
+    const prog = gl.createProgram();
+    gl.attachShader(prog, vs);
+    gl.attachShader(prog, fs);
+    gl.linkProgram(prog);
+    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) return;
+    gl.useProgram(prog);
+
+    const buf = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1,1,-1,-1,1,1,1]), gl.STATIC_DRAW);
+    const posLoc = gl.getAttribLocation(prog, 'a_pos');
+    gl.enableVertexAttribArray(posLoc);
+    gl.vertexAttribPointer(posLoc, 2, gl.FLOAT, false, 0, 0);
+
+    const uRes  = gl.getUniformLocation(prog, 'u_res');
+    const uTime = gl.getUniformLocation(prog, 'u_t');
+
+    canvas.style.background = PALETTE.bg;
+
+    const parent = canvas.parentElement;
+    function resize() {
+      const w = parent ? parent.clientWidth  : window.innerWidth;
+      const h = parent ? parent.clientHeight : window.innerHeight;
+      canvas.width  = w;
+      canvas.height = h;
+      gl.viewport(0, 0, w, h);
+    }
+    resize();
+    window.addEventListener('resize', resize, { passive: true });
+
+    const t0 = performance.now();
+    let raf = 0;
+    let firstFrame = true;
+
+    function render() {
+      const cc = PALETTE.cc;
+      gl.clearColor(cc[0], cc[1], cc[2], cc[3]);
+      gl.clear(gl.COLOR_BUFFER_BIT);
+      gl.uniform2f(uRes,  canvas.width, canvas.height);
+      gl.uniform1f(uTime, (performance.now() - t0) / 1000);
+      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+
+      /* Reveal on first rendered frame — eliminates blank/flash */
+      if (firstFrame) {
+        firstFrame = false;
+        requestAnimationFrame(() => canvas.classList.add('phc-visible'));
+      }
+
+      raf = requestAnimationFrame(render);
+    }
+
+    const visObs = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) { if (!raf) render(); }
+      else { cancelAnimationFrame(raf); raf = 0; }
+    }, { threshold: 0.01 });
+    visObs.observe(canvas);
+    render();
+
+    /* Cleanup on Astro view transitions */
+    function cleanup() {
+      visObs.disconnect();
+      cancelAnimationFrame(raf);
+      raf = 0;
+      window.removeEventListener('resize', resize);
+      try {
+        gl.deleteProgram(prog);
+        gl.deleteShader(vs);
+        gl.deleteShader(fs);
+        gl.deleteBuffer(buf);
+      } catch {}
+      document.removeEventListener('astro:before-swap', cleanup);
+    }
+    document.addEventListener('astro:before-swap', cleanup);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot, { once: true });
+  } else {
+    boot();
+  }
+  document.addEventListener('astro:page-load', boot);
+})();
+</script>

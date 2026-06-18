@@ -41,7 +41,7 @@ const nextProject = project.nextSlug
         </a>
 
         <!-- Title + tags -->
-        <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-6 mb-8" data-reveal>
+        <div class="flex flex-col items-start md:flex-row md:justify-between gap-6 mb-8" data-reveal>
           <div class="flex flex-col gap-3">
             <span class="text-[10px] font-medium tracking-[0.25em] uppercase text-[var(--color-accent)]">Case Study</span>
             <h1
@@ -74,7 +74,7 @@ const nextProject = project.nextSlug
               loading="eager"
             />
           </div>
-          <div class="absolute inset-0" style="background: linear-gradient(to bottom, transparent 40%, var(--color-bg) 100%);"></div>
+          <div class="absolute inset-0" style="background: linear-gradient(to bottom, transparent 25%, color-mix(in srgb, var(--color-bg) 12%, transparent) 48%, color-mix(in srgb, var(--color-bg) 50%, transparent) 70%, color-mix(in srgb, var(--color-bg) 85%, transparent) 87%, var(--color-bg) 100%);"></div>
         </div>
 
         <!-- Content grid -->
@@ -101,15 +101,23 @@ const nextProject = project.nextSlug
             </div>
 
             <!-- Gallery with CaseGallery lightbox -->
-            {(project.galleryDark ?? project.gallery).length > 0 && (
+            {(project.gallery?.length || project.galleryDark?.length || project.galleryLight?.length) && (
               <div data-reveal>
                 <span class="accent-line"></span>
                 <h2 class="text-[var(--color-fg)] mb-6" style="font-size: 1.5rem; font-weight: 300;">Скриншоты</h2>
                 <CaseGallery
                   client:visible
-                  images={(project.galleryDark ?? project.gallery).map((img, i) => ({
+                  images={(project.gallery ?? []).map((img, i) => ({
                     src: img.src,
                     alt: `${project.title} — скриншот ${i + 1}`,
+                  }))}
+                  imagesDark={project.galleryDark?.map((img, i) => ({
+                    src: img.src,
+                    alt: `${project.title} — тёмная тема, скриншот ${i + 1}`,
+                  }))}
+                  imagesLight={project.galleryLight?.map((img, i) => ({
+                    src: img.src,
+                    alt: `${project.title} — светлая тема, скриншот ${i + 1}`,
                   }))}
                 />
               </div>
@@ -231,7 +239,7 @@ const nextProject = project.nextSlug
   /* Parallax hero */
   .case-hero { position: relative; }
   .case-hero-img-wrap {
-    position: absolute; inset: -20%;
+    position: absolute; inset: -8%;
     will-change: transform;
   }
   .case-hero-img { width: 100%; height: 100%; object-fit: cover; object-position: top; display: block; }

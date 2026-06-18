@@ -5,6 +5,7 @@ import Footer from '../components/layout/Footer.astro';
 import ServicesGrid from '../components/sections/ServicesGrid.astro';
 import SectionHeading from '../components/ui/SectionHeading.astro';
 import Button from '../components/ui/Button.astro';
+import PageHeroCanvas from '../components/ui/PageHeroCanvas.astro';
 
 const serviceTypes = [
   {
@@ -84,31 +85,54 @@ const faqs = [
   <Header />
   <main>
 
-    <!-- Hero -->
-    <section class="pt-32 pb-10 section-padding" style="background: var(--color-bg);">
-      <div class="container-site max-w-4xl">
-        <span class="text-[10px] font-medium tracking-[0.25em] uppercase text-[var(--color-accent)] mb-4 block" data-reveal>
+    <!-- Inner-page hero — atmospheric shader backdrop -->
+    <section
+      id="hero"
+      class="page-hero relative overflow-hidden flex flex-col justify-center"
+      aria-label="Услуги — заголовок"
+    >
+      <!-- Atmospheric WebGL shader -->
+      <PageHeroCanvas />
+
+      <!-- Dark overlay: darkens top for header readability -->
+      <div class="absolute inset-0 z-1 pointer-events-none"
+        style="background: linear-gradient(to bottom, rgba(2,2,7,0.30) 0%, transparent 40%, transparent 60%, rgba(2,2,7,0.55) 100%);"
+        aria-hidden="true"></div>
+
+      <!-- Gradient fade into page body -->
+      <div class="page-hero-fade" aria-hidden="true"></div>
+
+      <!-- Text content -->
+      <div class="container-site relative z-10">
+        <span
+          class="text-[10px] font-medium tracking-[0.25em] uppercase mb-4 block"
+          style="color: rgba(167,139,250,0.80);"
+          data-reveal
+        >
           Services
         </span>
         <h1
-          class="font-light mb-6"
-          style="font-size: clamp(2.25rem, 6vw, 4rem); letter-spacing: -0.03em; color: var(--color-fg);"
+          class="font-light mb-5 text-white"
+          style="font-size: clamp(2.5rem, 6.5vw, 4.5rem); letter-spacing: -0.03em; line-height: 1.05; max-width: 18ch;"
           data-reveal data-reveal-delay="100"
         >
           Создаём сайты<br />под задачу бизнеса
         </h1>
         <p
-          class="text-[var(--color-fg-muted)] leading-relaxed max-w-2xl"
-          style="font-size: 1.125rem;"
+          class="leading-relaxed max-w-xl"
+          style="font-size: 1.0625rem; color: rgba(247,241,231,0.62);"
           data-reveal data-reveal-delay="200"
         >
-          От концепции до запуска — проектируем лендинги, сайты-визитки и корпоративные решения, которые выглядят дорого и помогают продавать.
+          От концепции до запуска — лендинги, сайты-визитки и корпоративные решения,
+          которые выглядят дорого и помогают продавать.
         </p>
       </div>
     </section>
 
-    <!-- Services grid (reuse section component) -->
-    <ServicesGrid />
+    <!-- Services grid -->
+    <div>
+      <ServicesGrid />
+    </div>
 
     <!-- Service types — detailed descriptions -->
     <section class="section-padding border-t border-[var(--color-border)]" style="background: var(--color-bg-warm);">
@@ -123,7 +147,7 @@ const faqs = [
           {serviceTypes.map((s, i) => (
             <div
               class="group flex flex-col gap-4 p-6 rounded-xl border border-[var(--color-border)] service-format-card"
-              style="transition: border-color 500ms cubic-bezier(0.16,1,0.3,1), background-color 500ms cubic-bezier(0.16,1,0.3,1), box-shadow 500ms cubic-bezier(0.16,1,0.3,1); cursor: default;"
+              style="transition: border-color 500ms cubic-bezier(0.16,1,0.3,1), background-color 500ms cubic-bezier(0.16,1,0.3,1), box-shadow 500ms cubic-bezier(0.16,1,0.3,1);"
               data-reveal="flip-3d"
               data-reveal-delay={i * 80}
             >

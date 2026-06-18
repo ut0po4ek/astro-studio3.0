@@ -34,9 +34,14 @@ import Footer from '../components/layout/Footer.astro';
     <TrustStrip variant="forward" />
     <ServicesGrid />
     <TrustStrip variant="reverse" />
+    {/* FeaturedWork scrolls freely so all portfolio cards are reachable.
+        sticky-stack is only Process + Why: ProcessSection sticks at top,
+        WhySection naплывает over it as the user scrolls. */}
     <FeaturedWork />
-    <ProcessSection />
-    <WhySection />
+    <div class="sticky-stack">
+      <ProcessSection />
+      <WhySection />
+    </div>
     <CtaSection />
     <ContactSection />
     <TrustStrip variant="reverse" />

@@ -1,38 +1,188 @@
 ---
 import Button from '../ui/Button.astro';
+import SpacePlanets from './SpacePlanets';
 import { siteConfig } from '../../config/site';
 ---
 
-<section id="project-cta" class="section-padding section-adaptive relative overflow-hidden">
-  <!-- Orbs -->
-  <div class="orb orb-1" style="width:500px;height:500px;top:-100px;left:-100px;background:radial-gradient(ellipse,rgba(129,140,248,0.18) 0%,transparent 70%);" aria-hidden="true"></div>
-  <div class="orb orb-2" style="width:400px;height:400px;bottom:-80px;right:-80px;background:radial-gradient(ellipse,rgba(192,132,252,0.15) 0%,transparent 70%);" aria-hidden="true"></div>
-  <!-- Grid pattern -->
-  <div class="absolute inset-0 bg-grid-pattern pointer-events-none" aria-hidden="true"></div>
+<section
+  id="project-cta"
+  class="cta-root relative"
+  aria-label="Призыв к действию"
+>
+  <!-- Three.js starfield + planets — desktop only, skipped on mobile in the component -->
+  <SpacePlanets client:visible />
 
-  <div class="container-site text-center relative z-10">
-    <div class="max-w-3xl mx-auto">
-      <span class="label-tag text-[var(--color-fg-subtle)] reveal">Начнём?</span>
-      <div class="divider my-4 mx-auto reveal reveal-delay-1" style="background-color: var(--color-accent);"></div>
+  <!-- Static gradient fallback — visible on mobile where Three.js is skipped -->
+  <div class="cta-bg-fallback" aria-hidden="true"></div>
+
+  <!-- Bottom fade into next section -->
+  <div class="cta-fade cta-fade--bottom" aria-hidden="true"></div>
+  <!-- Top fade -->
+  <div class="cta-fade cta-fade--top" aria-hidden="true"></div>
+
+  <!-- Content -->
+  <div class="container-site text-center relative cta-content">
+    <div class="max-w-3xl mx-auto flex flex-col items-center gap-6">
+
+      <span class="cta-eyebrow" data-reveal>Начнём?</span>
 
       <h2
-        class="text-[var(--color-fg)] font-light leading-tight mt-8 mb-6 reveal reveal-delay-2"
-        style="font-size: clamp(1.75rem, 4.5vw, 3.5rem); letter-spacing: -0.02em;"
+        class="cta-headline"
+        data-reveal
+        data-reveal-delay="100"
       >
-        Готовы обсудить<br /><span class="gradient-text">ваш проект?</span>
+        Готовы обсудить<br />
+        <em class="cta-gradient-text" style="font-style: normal;">ваш проект?</em>
       </h2>
 
-      <p class="text-[var(--color-fg-muted)] text-base leading-relaxed mb-10 reveal reveal-delay-3">
-        Расскажите, какой сайт или визуальное решение вам нужно — мы предложим формат, сроки и следующий шаг.
+      <p
+        class="cta-body"
+        data-reveal
+        data-reveal-delay="200"
+      >
+        Расскажите, какой сайт или визуальное решение вам нужно —<br class="hidden md:block" />
+        мы предложим формат, сроки и следующий шаг.
       </p>
 
-      <Button href={siteConfig.cta.href} variant="primary" size="lg" class="reveal reveal-delay-4" pulse>
-        {siteConfig.cta.label}
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-          <line x1="0" y1="7" x2="12" y2="7"/>
-          <polyline points="8,3 12,7 8,11"/>
-        </svg>
-      </Button>
+      <div
+        class="flex flex-wrap gap-4 justify-center pt-2"
+        data-reveal
+        data-reveal-delay="300"
+      >
+        <Button href={siteConfig.cta.href} variant="primary" size="lg" pulse>
+          {siteConfig.cta.label}
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <line x1="0" y1="7" x2="12" y2="7"/>
+            <polyline points="8,3 12,7 8,11"/>
+          </svg>
+        </Button>
+        <a href="/portfolio" class="btn btn-secondary btn-lg">
+          Смотреть работы
+        </a>
+      </div>
+
     </div>
   </div>
 </section>
+
+<style>
+  /* ── Section shell ─────────────────────────────────────── */
+  .cta-root {
+    min-height: 100dvh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* Space-dark background — intentionally stays dark in both themes */
+    background: #03030a;
+  }
+
+  /* ── Light theme: Three.js renders #c4b5fd bg — match pre-hydration ── */
+  :global([data-theme="light"]) .cta-root {
+    background: #c4b5fd;
+  }
+
+  /* ── Text colours flip to dark in light theme ─────────────────── */
+  :global([data-theme="light"]) .cta-eyebrow {
+    color: rgba(30, 27, 75, 0.55);
+  }
+  :global([data-theme="light"]) .cta-eyebrow::before,
+  :global([data-theme="light"]) .cta-eyebrow::after {
+    background: #4f46e5;
+    opacity: 0.7;
+  }
+  :global([data-theme="light"]) .cta-headline {
+    color: rgba(30, 27, 75, 0.95);
+  }
+  :global([data-theme="light"]) .cta-gradient-text {
+    background: linear-gradient(135deg, #4f46e5, #9333ea);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  :global([data-theme="light"]) .cta-body {
+    color: rgba(30, 27, 75, 0.60);
+  }
+
+  /* Fallback styles are in global.css to avoid Astro CID scoping issues */
+  .cta-bg-fallback {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* ── Fades blending with adjacent sections ───────────────── */
+  .cta-fade {
+    position: absolute;
+    left: 0; right: 0;
+    height: 120px;
+    pointer-events: none;
+    z-index: 2;
+  }
+  .cta-fade--bottom {
+    bottom: 0;
+    background: linear-gradient(to bottom, transparent, var(--color-bg));
+  }
+  .cta-fade--top {
+    top: 0;
+    background: linear-gradient(to top, transparent, var(--color-bg-warm));
+  }
+
+  /* ── Content ─────────────────────────────────────────────── */
+  .cta-content { z-index: 10; }
+
+  /* Force light text inside the dark CTA regardless of theme */
+  .cta-eyebrow,
+  .cta-headline,
+  .cta-body {
+    color: rgba(247, 241, 231, 0.9);
+  }
+
+  .cta-eyebrow {
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: rgba(247, 241, 231, 0.55);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .cta-eyebrow::before,
+  .cta-eyebrow::after {
+    content: '';
+    display: block;
+    width: 24px;
+    height: 1px;
+    background: #818cf8;
+    opacity: 0.6;
+  }
+
+  .cta-headline {
+    font-size: clamp(2.25rem, 5.5vw, 4.5rem);
+    font-weight: 300;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    color: rgba(247, 241, 231, 0.95);
+  }
+
+  .cta-gradient-text {
+    background: linear-gradient(135deg, #818cf8, #a78bfa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .cta-body {
+    font-size: clamp(0.95rem, 1.4vw, 1.1rem);
+    color: rgba(247, 241, 231, 0.60);
+    line-height: 1.75;
+    font-weight: 300;
+    max-width: 520px;
+  }
+
+  /* ── Mobile spacing ──────────────────────────────────────── */
+  @media (max-width: 767px) {
+    .cta-root { min-height: 85dvh; }
+  }
+</style>

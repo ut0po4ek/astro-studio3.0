@@ -14,13 +14,14 @@ const whyItems = [
 
 <section id="why" class="section-padding" style="background: var(--color-bg);">
   <div class="container-site">
-    <SectionHeading
-      label="Почему мы"
-      title="Что делает нас другими"
-      subtitle="Работаем быстро, качественно и без воды."
-      index="04"
-      class="mb-12"
-    />
-    <WhyStats client:visible items={whyItems} />
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-start">
+      <SectionHeading
+        label="Почему мы"
+        title="Что делает нас другими"
+        subtitle="Работаем быстро, качественно и без воды."
+        index="04"
+      />
+      <WhyStats client:visible items={whyItems} />
+    </div>
   </div>
 </section>

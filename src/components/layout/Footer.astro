@@ -5,109 +5,444 @@ const navLinks = siteConfig.nav;
 ---
 
 <style>
+  /* ─── Colour tokens — dark (default) ──────────────────── */
   .footer-root {
     --footer-text:       #f7f1e7;
-    --footer-text-muted: rgba(247, 241, 231, 0.65);
-    --footer-text-sub:   rgba(247, 241, 231, 0.42);
-    --footer-border:     rgba(247, 241, 231, 0.10);
+    --footer-text-muted: rgba(247, 241, 231, 0.60);
+    --footer-text-sub:   rgba(247, 241, 231, 0.38);
+    --footer-border:     rgba(129, 140, 248, 0.10);
   }
-  .footer-brand { color: var(--footer-text); }
-  .footer-link-muted { color: var(--footer-text-muted); }
-  .footer-link-muted:hover { color: var(--footer-text); }
-  .footer-link-sub { color: var(--footer-text-sub); }
-  .footer-link-sub:hover { color: var(--footer-text); }
-  .footer-cta-btn {
-    border: 1px solid rgba(247, 241, 231, 0.30);
+
+  /* ─── Light theme overrides ─────────────────────────── */
+  :global([data-theme="light"] .footer-root) {
+    --footer-text:       #1e1b4b;
+    --footer-text-muted: rgba(30, 27, 75, 0.65);
+    --footer-text-sub:   rgba(30, 27, 75, 0.42);
+    --footer-border:     rgba(79, 70, 229, 0.12);
+  }
+
+  /* ─── Root ───────────────────────────────────────────── */
+  .footer-root {
+    position: relative;
+    background: #030307;
+    overflow: hidden;
     color: var(--footer-text);
-    transition: border-color 300ms ease, background 300ms ease, color 300ms ease;
   }
-  .footer-cta-btn:hover {
-    border-color: var(--footer-text);
-    background: rgba(247, 241, 231, 0.10);
+  :global([data-theme="light"] .footer-root) {
+    background: #ede9fe;
   }
-  .footer-bottom-border { border-top: 1px solid var(--footer-border); }
-  .footer-icon-link {
-    width: 2.25rem;
-    height: 2.25rem;
+
+  /* ─── Ambient orbs ───────────────────────────────────── */
+  .footer-orb {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    filter: blur(72px);
+  }
+  .footer-orb-1 {
+    top: -80px; right: 8%;
+    width: 480px; height: 320px;
+    background: radial-gradient(ellipse at 50% 40%,
+      rgba(129, 140, 248, 0.14) 0%,
+      rgba(129, 140, 248, 0.04) 55%,
+      transparent 75%);
+  }
+  .footer-orb-2 {
+    bottom: 60px; left: -60px;
+    width: 360px; height: 260px;
+    background: radial-gradient(ellipse at 50% 60%,
+      rgba(192, 132, 252, 0.10) 0%,
+      rgba(192, 132, 252, 0.03) 55%,
+      transparent 75%);
+  }
+  .footer-orb-3 {
+    top: 50%; left: 38%;
+    width: 280px; height: 180px;
+    background: radial-gradient(ellipse at center,
+      rgba(99, 102, 241, 0.07) 0%,
+      transparent 70%);
+    filter: blur(48px);
+  }
+
+  /* ─── Gradient top accent line ───────────────────────── */
+  .footer-accent-line {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(129, 140, 248, 0.60) 30%,
+      rgba(192, 132, 252, 0.80) 50%,
+      rgba(129, 140, 248, 0.60) 70%,
+      transparent 100%
+    );
+  }
+
+  /* ─── Glass CTA strip ────────────────────────────────── */
+  .footer-cta-glass {
+    position: relative;
+    border-radius: 20px;
+    border: 1px solid rgba(129, 140, 248, 0.20);
+    background: rgba(129, 140, 248, 0.05);
+    -webkit-backdrop-filter: blur(16px) saturate(160%);
+    backdrop-filter: blur(16px) saturate(160%);
+    overflow: hidden;
+    padding: clamp(2rem, 4vw, 3.5rem) clamp(1.5rem, 4vw, 3.5rem);
+  }
+  /* Specular highlight — top inner edge */
+  .footer-cta-glass::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 12%; right: 12%;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(192, 132, 252, 0.65) 40%,
+      rgba(192, 132, 252, 0.65) 60%,
+      transparent
+    );
+    pointer-events: none;
+  }
+  /* Inner shadow for depth */
+  .footer-cta-glass::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 20px;
+    box-shadow:
+      inset 0 -1px 0 rgba(129, 140, 248, 0.08),
+      inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    pointer-events: none;
+  }
+  /* Ambient glow inside glass */
+  .footer-cta-glow {
+    position: absolute;
+    top: -80px; left: 50%;
+    transform: translateX(-50%);
+    width: 500px; height: 220px;
+    background: radial-gradient(ellipse at center,
+      rgba(129, 140, 248, 0.22) 0%,
+      transparent 65%);
+    filter: blur(36px);
+    pointer-events: none;
+  }
+  .footer-cta-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5rem;
+  }
+  @media (min-width: 768px) {
+    .footer-cta-content {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      gap: 2rem;
+    }
+  }
+  .footer-cta-label {
+    font-size: 0.625rem;
+    font-weight: 500;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: rgba(192, 132, 252, 0.80);
+    margin-bottom: 0.625rem;
+  }
+  .footer-cta-heading {
+    font-weight: 300;
+    line-height: 1.08;
+    letter-spacing: -0.03em;
+    color: var(--footer-text);
+    font-size: clamp(1.75rem, 3.5vw, 2.625rem);
+  }
+  .footer-cta-sub {
+    color: var(--footer-text-muted);
+    font-size: 0.9375rem;
+    line-height: 1.55;
+    max-width: 38ch;
+    margin-top: 0.5rem;
+  }
+  .footer-cta-btn-glass {
+    flex-shrink: 0;
     display: inline-flex;
     align-items: center;
-    justify-content: center;
-    border: 1px solid rgba(247, 241, 231, 0.14);
-    border-radius: 999px;
-    color: var(--footer-text-sub);
-    transition: color 200ms ease, border-color 200ms ease, background-color 200ms ease;
-  }
-  .footer-icon-link:hover {
-    color: var(--footer-text);
-    border-color: rgba(247, 241, 231, 0.40);
-    background-color: rgba(247, 241, 231, 0.06);
-  }
-  .footer-ig-text {
-    font-size: 0.6rem;
+    gap: 0.5rem;
+    padding: 0.875rem 2rem;
+    font-size: 0.6875rem;
     font-weight: 500;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--footer-text);
+    border: 1px solid rgba(129, 140, 248, 0.45);
+    border-radius: 4px;
+    position: relative;
+    overflow: hidden;
+    transition:
+      border-color 300ms ease,
+      box-shadow   300ms ease;
   }
+  .footer-cta-btn-glass::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg,
+      rgba(129, 140, 248, 0.18),
+      rgba(192, 132, 252, 0.12));
+    opacity: 0;
+    transition: opacity 300ms ease;
+  }
+  .footer-cta-btn-glass:hover {
+    border-color: rgba(167, 139, 250, 0.80);
+    box-shadow: 0 0 24px rgba(129, 140, 248, 0.30);
+  }
+  .footer-cta-btn-glass:hover::before { opacity: 1; }
+  .footer-cta-btn-glass span { position: relative; z-index: 1; }
+  .footer-cta-arrow {
+    position: relative;
+    z-index: 1;
+    transition: transform 280ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .footer-cta-btn-glass:hover .footer-cta-arrow { transform: translateX(3px); }
+
+  /* ─── Grid divider ───────────────────────────────────── */
+  .footer-divider {
+    border-top: 1px solid var(--footer-border);
+  }
+
+  /* ─── Link styles ────────────────────────────────────── */
   .footer-link {
     position: relative;
     padding-bottom: 1px;
     transition: color 200ms ease;
+    color: var(--footer-text-muted);
   }
   .footer-link::after {
     content: '';
     position: absolute;
     bottom: 0; left: 0; right: 100%;
     height: 1px;
-    background: var(--gradient-accent);
-    transition: right 280ms var(--ease-out);
+    background: linear-gradient(135deg, #818cf8, #c084fc);
+    transition: right 280ms cubic-bezier(0.16, 1, 0.3, 1);
   }
   .footer-link:hover::after { right: 0; }
   .footer-link:hover { color: var(--footer-text); }
+
+  .footer-link-sub { color: var(--footer-text-sub); transition: color 200ms ease; }
+  .footer-link-sub:hover { color: var(--footer-text); }
+
+  /* ─── Section label ──────────────────────────────────── */
+  .footer-section-label {
+    font-size: 0.625rem;
+    font-weight: 500;
+    letter-spacing: 0.20em;
+    text-transform: uppercase;
+    color: var(--footer-text-sub);
+    margin-bottom: 1.25rem;
+  }
+
+  /* ─── Social icon links ──────────────────────────────── */
+  .footer-icon-link {
+    width: 2.25rem;
+    height: 2.25rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(129, 140, 248, 0.16);
+    border-radius: 10px;
+    color: rgba(247, 241, 231, 0.45);
+    background: rgba(129, 140, 248, 0.03);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    transition:
+      color         200ms ease,
+      border-color  200ms ease,
+      background    200ms ease,
+      box-shadow    200ms ease;
+  }
+  .footer-icon-link:hover {
+    color: var(--footer-text);
+    border-color: rgba(167, 139, 250, 0.50);
+    background: rgba(129, 140, 248, 0.10);
+    box-shadow: 0 0 12px rgba(129, 140, 248, 0.18);
+  }
+  .footer-ig-text {
+    font-size: 0.6rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+  }
+
+  /* ─── Bottom bar ─────────────────────────────────────── */
+  .footer-bottom {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--footer-border);
+  }
+  @media (min-width: 640px) {
+    .footer-bottom {
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+    }
+  }
+
+  /* ─── Light theme — glass CTA & orbs ──────────────────── */
+  :global([data-theme="light"] .footer-orb-1) {
+    background: radial-gradient(ellipse at 50% 40%,
+      rgba(79, 70, 229, 0.10) 0%,
+      rgba(79, 70, 229, 0.03) 55%,
+      transparent 75%);
+  }
+  :global([data-theme="light"] .footer-orb-2) {
+    background: radial-gradient(ellipse at 50% 60%,
+      rgba(147, 51, 234, 0.08) 0%,
+      transparent 75%);
+  }
+  :global([data-theme="light"] .footer-orb-3) {
+    background: radial-gradient(ellipse at center,
+      rgba(79, 70, 229, 0.05) 0%,
+      transparent 70%);
+  }
+  :global([data-theme="light"] .footer-accent-line) {
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(79, 70, 229, 0.40) 30%,
+      rgba(147, 51, 234, 0.55) 50%,
+      rgba(79, 70, 229, 0.40) 70%,
+      transparent 100%
+    );
+  }
+  :global([data-theme="light"] .footer-cta-glass) {
+    border-color: rgba(79, 70, 229, 0.18);
+    background: rgba(255, 255, 255, 0.55);
+  }
+  :global([data-theme="light"] .footer-cta-glass)::before {
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(147, 51, 234, 0.35) 40%,
+      rgba(147, 51, 234, 0.35) 60%,
+      transparent
+    );
+  }
+  :global([data-theme="light"] .footer-cta-glow) {
+    background: radial-gradient(ellipse at center,
+      rgba(79, 70, 229, 0.14) 0%,
+      transparent 65%);
+  }
+  :global([data-theme="light"] .footer-cta-label) {
+    color: rgba(147, 51, 234, 0.80);
+  }
+  :global([data-theme="light"] .footer-cta-btn-glass) {
+    border-color: rgba(79, 70, 229, 0.35);
+  }
+  :global([data-theme="light"] .footer-cta-btn-glass):hover {
+    border-color: rgba(79, 70, 229, 0.70);
+    box-shadow: 0 0 24px rgba(79, 70, 229, 0.20);
+  }
+  :global([data-theme="light"] .footer-icon-link) {
+    border-color: rgba(79, 70, 229, 0.20);
+    background: rgba(79, 70, 229, 0.06);
+    color: rgba(79, 70, 229, 0.65);
+  }
+  :global([data-theme="light"] .footer-icon-link):hover {
+    border-color: rgba(79, 70, 229, 0.50);
+    background: rgba(79, 70, 229, 0.12);
+    color: rgba(79, 70, 229, 1.0);
+    box-shadow: 0 0 12px rgba(79, 70, 229, 0.16);
+  }
+
+  /* ─── Reduced motion ─────────────────────────────────── */
+  @media (prefers-reduced-motion: reduce) {
+    .footer-cta-btn-glass,
+    .footer-cta-btn-glass::before,
+    .footer-cta-arrow,
+    .footer-icon-link { transition: none; }
+  }
 </style>
 
-<footer class="footer-root relative" style="background: var(--color-bg-dark);">
-  <!-- Gradient top border -->
-  <div
-    aria-hidden="true"
-    style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--color-accent),var(--color-accent-2),transparent);"
-  ></div>
+<footer class="footer-root" aria-label="Подвал сайта">
 
-  <div class="container-site py-16 md:py-20">
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 md:gap-8">
-      <!-- Brand -->
-      <div class="lg:col-span-1">
-        <a href="/" class="footer-brand text-sm font-medium tracking-[0.15em] uppercase block mb-4">
-          <span style="color:var(--color-fg);">Astro</span><span class="gradient-text">&nbsp;Studio</span>
+  <!-- Ambient depth orbs -->
+  <div class="footer-orb footer-orb-1" aria-hidden="true"></div>
+  <div class="footer-orb footer-orb-2" aria-hidden="true"></div>
+  <div class="footer-orb footer-orb-3" aria-hidden="true"></div>
+
+  <!-- Gradient accent top line -->
+  <div class="footer-accent-line" aria-hidden="true"></div>
+
+  <div class="container-site" style="padding-top: clamp(3.5rem, 7vw, 5.5rem); padding-bottom: clamp(2.5rem, 5vw, 4rem);">
+
+    <!-- ── Glass CTA strip ──────────────────────────────── -->
+    <div class="footer-cta-glass">
+      <div class="footer-cta-glow" aria-hidden="true"></div>
+      <div class="footer-cta-content">
+        <div>
+          <p class="footer-cta-label">Начать работу</p>
+          <h2 class="footer-cta-heading">Расскажите<br class="hidden sm:block" /> о проекте</h2>
+          <p class="footer-cta-sub">{siteConfig.footer.ctaText}</p>
+        </div>
+        <a href={siteConfig.cta.href} class="footer-cta-btn-glass">
+          <span>{siteConfig.cta.label}</span>
+          <svg class="footer-cta-arrow" width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <line x1="1" y1="12" x2="12" y2="1"/>
+            <polyline points="4,1 12,1 12,9"/>
+          </svg>
         </a>
-        <p class="footer-link-muted text-sm leading-relaxed max-w-xs">
+      </div>
+    </div>
+
+    <!-- ── Info grid ─────────────────────────────────────── -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8 mt-14 pt-14 footer-divider">
+
+      <!-- Brand -->
+      <div>
+        <a
+          href="/"
+          class="text-sm font-medium tracking-[0.15em] uppercase block mb-5"
+          style="color: var(--footer-text);"
+          aria-label="Astro Studio — на главную"
+        >
+          <span>Astro</span><span
+            style="background: linear-gradient(135deg, #818cf8, #c084fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;"
+          >&nbsp;Studio</span>
+        </a>
+        <p style="color: var(--footer-text-muted); font-size: 0.875rem; line-height: 1.6; max-width: 28ch;">
           {siteConfig.footer.tagline}
         </p>
       </div>
 
       <!-- Navigation -->
       <div>
-        <p class="label-tag footer-link-sub mb-5">Навигация</p>
+        <p class="footer-section-label">Навигация</p>
         <nav aria-label="Навигация в подвале" class="flex flex-col gap-3">
           {navLinks.map((link) => (
-            <a href={link.href} class="footer-link footer-link-muted text-sm">
+            <a href={link.href} class="footer-link text-sm">
               {link.label}
             </a>
           ))}
         </nav>
       </div>
 
-      <!-- Contacts -->
+      <!-- Contacts + Social -->
       <div>
-        <p class="label-tag footer-link-sub mb-5">Контакты</p>
-        <div class="flex flex-col gap-3">
+        <p class="footer-section-label">Контакты</p>
+        <div class="flex flex-col gap-2.5 mb-6">
           <a
             href={`mailto:${siteConfig.contacts.email}`}
-            class="footer-link footer-link-muted text-sm"
+            class="footer-link text-sm"
           >
             {siteConfig.contacts.email}
           </a>
         </div>
 
-        <div class="flex gap-3 mt-6">
+        <div class="flex gap-2">
           <a
             href={siteConfig.contacts.telegram && siteConfig.contacts.telegram !== 'about:blank' ? siteConfig.contacts.telegram : '#'}
             class="footer-icon-link"
@@ -115,7 +450,7 @@ const navLinks = siteConfig.nav;
             rel="noreferrer"
             aria-label="Telegram"
           >
-            <Icon name="telegram" size={17} />
+            <Icon name="telegram" size={16} />
           </a>
           <a
             href={siteConfig.contacts.whatsapp && siteConfig.contacts.whatsapp !== 'about:blank' ? siteConfig.contacts.whatsapp : '#'}
@@ -124,7 +459,7 @@ const navLinks = siteConfig.nav;
             rel="noreferrer"
             aria-label="WhatsApp"
           >
-            <Icon name="whatsapp" size={17} />
+            <Icon name="whatsapp" size={16} />
           </a>
           <a
             href={siteConfig.contacts.instagram && siteConfig.contacts.instagram !== 'about:blank' ? siteConfig.contacts.instagram : '#'}
@@ -142,41 +477,29 @@ const navLinks = siteConfig.nav;
             rel="noreferrer"
             aria-label="VK"
           >
-            <Icon name="vk" size={17} />
+            <Icon name="vk" size={16} />
           </a>
         </div>
       </div>
 
-      <!-- CTA -->
-      <div>
-        <p class="label-tag footer-link-sub mb-5">Начать работу</p>
-        <p class="footer-link-muted text-sm mb-6 leading-relaxed">
-          {siteConfig.footer.ctaText}
-        </p>
-        <a
-          href={siteConfig.cta.href}
-          class="footer-cta-btn inline-flex items-center gap-2 px-5 py-2.5 text-xs font-medium tracking-widest uppercase"
-        >
-          {siteConfig.cta.label}
-        </a>
-      </div>
     </div>
 
-    <!-- Bottom bar -->
-    <div class="footer-bottom-border mt-16 pt-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <!-- ── Bottom bar ─────────────────────────────────────── -->
+    <div class="footer-bottom mt-10">
       <p class="footer-link-sub text-xs">
         © {siteConfig.year} {siteConfig.name}. Все права защищены.
       </p>
-      <div class="flex gap-6">
-        <a href={siteConfig.footer.privacyHref} class="footer-link footer-link-sub text-xs">
-          Политика конфиденциальности
-        </a>
+      <div class="flex gap-6 flex-wrap">
+        {siteConfig.footer.legal.map((doc) => (
+          <a href={doc.href} class="footer-link footer-link-sub text-xs">{doc.label}</a>
+        ))}
       </div>
     </div>
 
     <!-- Legal disclaimer -->
-    <p class="footer-link-sub text-[10px] leading-relaxed mt-6 max-w-xl">
+    <p class="footer-link-sub text-[10px] leading-relaxed mt-5 max-w-xl">
       *Instagram принадлежит компании Meta Platforms Inc., деятельность которой признана экстремистской и запрещена на территории РФ.
     </p>
+
   </div>
 </footer>

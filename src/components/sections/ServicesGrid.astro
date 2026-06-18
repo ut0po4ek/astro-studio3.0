@@ -12,15 +12,19 @@ const services = [
 ];
 ---
 
-<section id="services" class="section-padding" style="background: var(--color-bg);">
+<section id="services" class="section-padding" style="background: var(--color-bg);" data-reveal-section="up">
   <div class="container-site">
-    <SectionHeading
-      label="Услуги"
-      title="Что мы делаем"
-      subtitle="Проектируем структуру сайта вокруг цели: заявки, продажи, доверие."
-      index="01"
-      class="mb-12"
-    />
-    <ServiceCards client:visible services={services} />
+    <div data-parallax="slow">
+      <SectionHeading
+        label="Услуги"
+        title="Что мы делаем"
+        subtitle="Проектируем структуру сайта вокруг цели: заявки, продажи, доверие."
+        index="01"
+        class="mb-12"
+      />
+    </div>
+    <div data-parallax="fast">
+      <ServiceCards client:visible services={services} />
+    </div>
   </div>
 </section>

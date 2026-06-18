@@ -4,6 +4,7 @@ import Header from '../components/layout/Header.astro';
 import Footer from '../components/layout/Footer.astro';
 import ContactSection from '../components/sections/ContactSection.astro';
 import Icon from '../components/ui/Icon.astro';
+import PageHeroCanvas from '../components/ui/PageHeroCanvas.astro';
 import { siteConfig } from '../config/site';
 import { getFeaturedProjects } from '../data/portfolio';
 
@@ -65,21 +66,39 @@ const faqs = [
   <Header />
   <main>
 
-    <!-- Hero -->
-    <section class="pt-32 pb-16 section-padding" style="background: var(--color-bg);">
-      <div class="container-site max-w-3xl">
-        <span class="text-[10px] font-medium tracking-[0.25em] uppercase text-[var(--color-accent)] mb-4 block" data-reveal>
+    <!-- Inner-page hero — atmospheric shader backdrop -->
+    <section
+      id="hero"
+      class="page-hero relative overflow-hidden flex flex-col justify-center"
+      aria-label="Контакты — заголовок"
+    >
+      <PageHeroCanvas />
+      <div class="absolute inset-0 z-1 pointer-events-none"
+        style="background: linear-gradient(to bottom, rgba(2,2,7,0.30) 0%, transparent 40%, transparent 60%, rgba(2,2,7,0.55) 100%);"
+        aria-hidden="true"></div>
+      <div class="page-hero-fade" aria-hidden="true"></div>
+
+      <div class="container-site relative z-10">
+        <span
+          class="text-[10px] font-medium tracking-[0.25em] uppercase mb-4 block"
+          style="color: rgba(167,139,250,0.80);"
+          data-reveal
+        >
           Contact
         </span>
         <h1
-          class="font-light mb-4"
-          style="font-size: clamp(2rem, 5vw, 3.5rem); letter-spacing: -0.03em; color: var(--color-fg);"
+          class="font-light mb-5 text-white"
+          style="font-size: clamp(2.5rem, 6.5vw, 4.5rem); letter-spacing: -0.03em; line-height: 1.05;"
           data-reveal data-reveal-delay="100"
         >
           Начнём работу?
         </h1>
-        <p class="text-[var(--color-fg-muted)] text-lg leading-relaxed" data-reveal data-reveal-delay="200">
-          Расскажите о проекте — мы ответим, предложим формат и следующий шаг.
+        <p
+          class="leading-relaxed max-w-lg"
+          style="font-size: 1.0625rem; color: rgba(247,241,231,0.62);"
+          data-reveal data-reveal-delay="200"
+        >
+          Расскажите о проекте — ответим, предложим формат и следующий шаг.
         </p>
       </div>
     </section>
@@ -93,7 +112,8 @@ const faqs = [
               href={ch.href && ch.href !== '#' && ch.href !== 'about:blank' ? ch.href : undefined}
               target={ch.href && ch.href !== '#' && ch.href !== 'about:blank' ? '_blank' : undefined}
               rel="noreferrer"
-              class="group flex flex-col gap-4 p-6 rounded-xl border border-[var(--color-border)] hover:border-[var(--color-accent)] transition-all duration-300"
+              class="contact-channel-card group flex flex-col gap-4 p-6 rounded-xl border border-[var(--color-border)] hover:border-[var(--color-accent)] transition-colors duration-500"
+              style="transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);"
               data-reveal
               data-reveal-delay={i * 80}
             >
@@ -182,8 +202,12 @@ const faqs = [
           ))}
         </div>
         <div class="text-center mt-8" data-reveal data-reveal-delay="200">
-          <a href="/portfolio" class="text-[var(--color-accent)] text-sm font-medium tracking-wide uppercase hover:opacity-70 transition-opacity">
-            Смотреть все проекты →
+          <a href="/portfolio" class="portfolio-view-link">
+            <span class="portfolio-view-link__text">Смотреть все проекты</span>
+            <svg class="portfolio-view-link__arrow" width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+              <line x1="0" y1="14" x2="14" y2="0"/>
+              <polyline points="5,0 14,0 14,9"/>
+            </svg>
           </a>
         </div>
       </div>

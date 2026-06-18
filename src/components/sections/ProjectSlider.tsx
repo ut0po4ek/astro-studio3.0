@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 
 interface Project {
@@ -15,55 +15,63 @@ interface Props {
 
 const AUTOPLAY_INTERVAL = 4500;
 
-// Book page flip variants — rotates around Y axis with perspective on parent
-const flipVariants = {
+/*
+ * Emil Kowalski depth-shift transition.
+ *
+ * Exit:  slide recedes — scale down, drift sideways, blur out.
+ *        Fast ease-in so it gets out of the way quickly.
+ * Enter: new slide emerges from depth — spring physics on X + scale,
+ *        blur clears as it settles. Feels physical, not mechanical.
+ */
+const slideVariants = {
   enter: (dir: number) => ({
-    rotateY: dir > 0 ? 70 : -70,
+    x:      dir > 0 ? '7%' : '-7%',
+    scale:  0.93,
     opacity: 0,
-    scale: 0.88,
-    filter: 'brightness(0.6)',
+    filter: 'blur(5px) brightness(0.75)',
   }),
   center: {
-    rotateY: 0,
+    x:      0,
+    scale:  1,
     opacity: 1,
-    scale: 1,
-    filter: 'brightness(1)',
+    filter: 'blur(0px) brightness(1)',
     transition: {
-      rotateY: { duration: 0.45, ease: [0.16, 1, 0.3, 1] },
-      opacity:  { duration: 0.25, ease: 'easeOut' },
-      scale:    { duration: 0.45, ease: [0.16, 1, 0.3, 1] },
-      filter:   { duration: 0.35, ease: 'easeOut' },
+      x:       { type: 'spring' as const, stiffness: 300, damping: 30, mass: 0.8 },
+      scale:   { type: 'spring' as const, stiffness: 300, damping: 30, mass: 0.8 },
+      opacity: { duration: 0.28, ease: 'easeOut' },
+      filter:  { duration: 0.42, ease: [0.16, 1, 0.3, 1] },
     },
   },
   exit: (dir: number) => ({
-    rotateY: dir > 0 ? -70 : 70,
+    x:      dir > 0 ? '-5%' : '5%',
+    scale:  0.91,
     opacity: 0,
-    scale: 0.88,
-    filter: 'brightness(0.6)',
+    filter: 'blur(8px) brightness(0.6)',
     transition: {
-      rotateY: { duration: 0.28, ease: [0.4, 0, 0.6, 1] },
-      opacity:  { duration: 0.18, ease: 'easeIn' },
-      scale:    { duration: 0.28, ease: [0.4, 0, 0.6, 1] },
-      filter:   { duration: 0.2,  ease: 'easeIn' },
+      x:       { duration: 0.22, ease: [0.55, 0, 1, 0.45] },
+      scale:   { duration: 0.22, ease: [0.55, 0, 1, 0.45] },
+      opacity: { duration: 0.18, ease: 'easeIn' },
+      filter:  { duration: 0.20, ease: 'easeIn' },
     },
   }),
 };
 
 export default function ProjectSlider({ projects }: Props) {
-  const [current, setCurrent] = useState(0);
+  const [current, setCurrent]     = useState(0);
   const [direction, setDirection] = useState(1);
-  const [isPaused, setIsPaused] = useState(false);
-  const prefersReduced = useReducedMotion();
+  const [isPaused, setIsPaused]   = useState(false);
+  const [timerKey, setTimerKey]   = useState(0);
+  const prefersReduced            = useReducedMotion();
 
   const goTo = (idx: number, dir: number) => {
     const next = ((idx % projects.length) + projects.length) % projects.length;
     setDirection(dir);
     setCurrent(next);
+    setTimerKey(k => k + 1);
   };
 
   const advance = (delta: number) => goTo(current + delta, Math.sign(delta) || 1);
 
-  // Auto-play: always goes forward
   useEffect(() => {
     if (isPaused || prefersReduced) return;
     const id = setInterval(() => {
@@ -71,52 +79,58 @@ export default function ProjectSlider({ projects }: Props) {
       setCurrent(c => (c + 1) % projects.length);
     }, AUTOPLAY_INTERVAL);
     return () => clearInterval(id);
-  }, [isPaused, projects.length, prefersReduced]);
+  }, [isPaused, projects.length, prefersReduced, timerKey]);
 
-  // Drag handlers
   const handleDragStart = () => setIsPaused(true);
-  const handleDragEnd = (_: unknown, info: { offset: { x: number } }) => {
+  const handleDragEnd   = (_: unknown, info: { offset: { x: number } }) => {
     setIsPaused(false);
     if (info.offset.x < -50) advance(1);
     else if (info.offset.x > 50) advance(-1);
   };
 
   return (
-    // Perspective wrapper — gives depth to the rotateY flip
-    <div style={{ perspective: '1100px', perspectiveOrigin: '50% 50%' }}>
-      <div className="relative w-full rounded-xl" style={{ aspectRatio: '16/10' }}>
+    <div style={{ perspective: '1200px', perspectiveOrigin: '50% 50%' }}>
+      <div className="relative w-full" style={{ aspectRatio: '16/10' }}>
 
-        {/* Offset decorative border */}
-        <motion.div
-          className="absolute pointer-events-none rounded-xl"
-          style={{ inset: 0, border: '1px solid var(--color-border-bright)', zIndex: 0 }}
-          initial={prefersReduced ? {} : { opacity: 0, x: 8, y: -8 }}
-          animate={{ opacity: 1, x: 0, y: 0 }}
-          transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: 0.8 }}
-        />
-
-        {/* Slide area */}
-        <div className="absolute inset-0 overflow-hidden rounded-xl" style={{ zIndex: 1 }}>
+        {/* ── Slide area ───────────────────────────────────────────────── */}
+        <div
+          className="absolute inset-0 overflow-hidden rounded-2xl"
+          style={{
+            zIndex: 1,
+            /*
+             * Mask vignette — sides fade gently, top fades a little.
+             * Bottom stays fully opaque so caption text and tag pills
+             * remain readable; the dark caption gradient inside the image
+             * already handles the blend into the hero background.
+             */
+            maskImage: [
+              'linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%)',
+              'linear-gradient(to bottom, transparent 0%, black 9%, black 95%, transparent 100%)',
+            ].join(', '),
+            WebkitMaskImage: [
+              'linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%)',
+              'linear-gradient(to bottom, transparent 0%, black 9%, black 95%, transparent 100%)',
+            ].join(', '),
+            maskComposite: 'intersect',
+            WebkitMaskComposite: 'destination-in',
+          }}
+        >
           <AnimatePresence mode="wait" custom={direction}>
             <motion.div
               key={current}
               custom={direction}
-              variants={prefersReduced ? undefined : flipVariants}
+              variants={prefersReduced ? undefined : slideVariants}
               initial={prefersReduced ? { opacity: 0 } : 'enter'}
               animate={prefersReduced ? { opacity: 1 } : 'center'}
               exit={prefersReduced ? { opacity: 0 } : 'exit'}
               className="absolute inset-0 cursor-grab active:cursor-grabbing"
               drag={prefersReduced ? false : 'x'}
               dragConstraints={{ left: 0, right: 0 }}
-              dragElastic={0.08}
+              dragElastic={0.06}
               onDragStart={handleDragStart}
               onDragEnd={handleDragEnd}
-              style={{
-                borderRadius: '0.75rem',
-                overflow: 'hidden',
-                willChange: 'transform, opacity',
-              }}
-              whileDrag={{ scale: 0.98 }}
+              style={{ willChange: 'transform, opacity, filter' }}
+              whileDrag={{ scale: 0.985 }}
             >
               <img
                 src={projects[current].image.src}
@@ -129,30 +143,38 @@ export default function ProjectSlider({ projects }: Props) {
                 draggable={false}
               />
 
-              {/* Gradient overlay */}
+              {/* Dark caption gradient — inside image area */}
               <div style={{
                 position: 'absolute', inset: 0,
-                background: 'linear-gradient(to top, rgba(12,12,20,0.8) 0%, rgba(12,12,20,0.08) 48%, transparent 100%)',
+                background: 'linear-gradient(to top, rgba(6,6,16,0.85) 0%, rgba(6,6,16,0.06) 52%, transparent 100%)',
+                pointerEvents: 'none',
               }} />
 
               {/* Caption */}
-              <div style={{ position: 'absolute', bottom: '1.5rem', left: '1.5rem', right: '4rem' }}>
+              <div style={{ position: 'absolute', bottom: '1.75rem', left: '1.5rem', right: '4rem' }}>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem', marginBottom: '0.5rem' }}>
                   {projects[current].tags.map((tag) => (
                     <span
                       key={tag}
                       style={{
-                        fontSize: '9px', fontWeight: 500, letterSpacing: '0.12em', textTransform: 'uppercase',
+                        fontSize: '9px', fontWeight: 500,
+                        letterSpacing: '0.12em', textTransform: 'uppercase',
                         padding: '3px 8px', borderRadius: '100px',
-                        background: 'rgba(129,140,248,0.22)', color: 'rgba(226,232,240,0.9)',
-                        backdropFilter: 'blur(8px)', border: '1px solid rgba(129,140,248,0.28)',
+                        background: 'rgba(129,140,248,0.22)',
+                        color: 'rgba(226,232,240,0.9)',
+                        backdropFilter: 'blur(8px)',
+                        border: '1px solid rgba(129,140,248,0.28)',
                       }}
                     >
                       {tag}
                     </span>
                   ))}
                 </div>
-                <p style={{ color: 'rgba(226,232,240,0.92)', fontSize: '0.875rem', fontWeight: 500 }}>
+                <p style={{
+                  color: 'rgba(226,232,240,0.92)',
+                  fontSize: '0.875rem',
+                  fontWeight: 500,
+                }}>
                   {projects[current].title}
                 </p>
               </div>
@@ -160,17 +182,25 @@ export default function ProjectSlider({ projects }: Props) {
           </AnimatePresence>
         </div>
 
-        {/* Progress bar — resets with each slide */}
+        {/* ── Progress bar ─────────────────────────────────────────────── */}
         {!prefersReduced && (
-          <div style={{
-            position: 'absolute', bottom: 0, left: 0, right: 0, height: '2px',
-            background: 'rgba(129,140,248,0.12)', zIndex: 10,
-            borderRadius: '0 0 0.75rem 0.75rem',
-          }}>
+          <div
+            className="slider-progress-track"
+            style={{
+              position: 'absolute', bottom: '6px',
+              left: '10%', right: '10%',
+              height: '2px',
+              background: 'rgba(148,163,184,0.22)',
+              zIndex: 10,
+              borderRadius: '2px',
+              overflow: 'hidden',
+            }}
+          >
             <motion.div
-              key={`bar-${current}`}
+              key={`bar-${current}-${timerKey}`}
               style={{
-                height: '100%', borderRadius: '0 0 0.75rem 0.75rem',
+                height: '100%',
+                borderRadius: '2px',
                 background: 'var(--gradient-accent)',
                 willChange: 'width',
               }}
@@ -181,24 +211,35 @@ export default function ProjectSlider({ projects }: Props) {
           </div>
         )}
 
-        {/* Dot indicators */}
-        <div style={{ position: 'absolute', top: '1rem', right: '1rem', display: 'flex', gap: '6px', zIndex: 10 }}>
+        {/* ── Dot indicators ────────────────────────────────────────────── */}
+        <div style={{
+          position: 'absolute',
+          bottom: '1.125rem', right: '1.25rem',
+          display: 'flex', gap: '6px', zIndex: 10,
+        }}>
           {projects.map((_, i) => (
             <button
               key={i}
               onClick={() => goTo(i, i > current ? 1 : -1)}
               aria-label={`Слайд ${i + 1}`}
-              style={{ padding: 0, background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', width: 28, height: 16 }}
+              style={{
+                padding: 0, background: 'none', border: 'none',
+                cursor: 'pointer', display: 'flex',
+                alignItems: 'center', justifyContent: 'center',
+                width: 28, height: 16,
+              }}
             >
-              {i === current ? (
-                <motion.span
-                  layoutId="slider-dot-active"
-                  style={{ display: 'block', height: 6, width: 24, borderRadius: 3, background: 'var(--gradient-accent)' }}
-                  transition={{ type: 'spring', stiffness: 420, damping: 30 }}
-                />
-              ) : (
-                <span style={{ display: 'block', width: 6, height: 6, borderRadius: '50%', background: 'rgba(226,232,240,0.3)' }} />
-              )}
+              <span style={{
+                display: 'block',
+                height: '4px',
+                width: i === current ? '22px' : '4px',
+                borderRadius: i === current ? '2px' : '50%',
+                background: i === current
+                  ? 'var(--gradient-accent)'
+                  : 'rgba(148,163,184,0.50)',
+                boxShadow: i === current ? '0 0 8px rgba(129,140,248,0.5)' : 'none',
+                transition: 'width 0.35s cubic-bezier(0.34,1.56,0.64,1), border-radius 0.35s ease, background 0.25s ease',
+              }} />
             </button>
           ))}
         </div>

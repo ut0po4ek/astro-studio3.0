@@ -18,19 +18,22 @@ const stagger = {
   visible: { transition: { staggerChildren: 0.1 } },
 };
 
+// Grid cards — scale up from slightly below with spring
 const fadeUp = {
-  hidden: { opacity: 0, y: 32, scale: 0.98 },
+  hidden: { opacity: 0, y: 48, scale: 0.92 },
   visible: {
     opacity: 1, y: 0, scale: 1,
-    transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] },
+    transition: { duration: 0.75, ease: [0.16, 1, 0.3, 1] },
   },
 };
 
-const fadeLeft = {
-  hidden: { opacity: 0, x: -24 },
+// Featured card — clip-path reveal from top, like a curtain opening
+const clipReveal = {
+  hidden: { clipPath: 'inset(0 0 100% 0)', opacity: 0 },
   visible: {
-    opacity: 1, x: 0,
-    transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] },
+    clipPath: 'inset(0 0 0% 0)',
+    opacity: 1,
+    transition: { duration: 0.85, ease: [0.16, 1, 0.3, 1] },
   },
 };
 
@@ -95,8 +98,9 @@ function PortfolioCard({ project, basePath, prefersReduced, featured = false }: 
           ))}
         </div>
 
-        {/* Arrow badge top-right */}
-        <motion.div
+        {/* Arrow badge top-right — animates on card hover via CSS */}
+        <div
+          className="arrow-badge"
           style={{
             position: 'absolute', top: '1rem', right: '1rem',
             width: '2.25rem', height: '2.25rem', borderRadius: '50%',
@@ -104,14 +108,12 @@ function PortfolioCard({ project, basePath, prefersReduced, featured = false }: 
             border: '1px solid rgba(129,140,248,0.35)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}
-          whileHover={prefersReduced ? {} : { scale: 1.15, rotate: 45 }}
-          transition={{ duration: 0.3 }}
         >
           <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="rgba(226,232,240,0.85)" strokeWidth="1.5" aria-hidden="true">
             <line x1="0" y1="12" x2="12" y2="0"/>
             <polyline points="4,0 12,0 12,8"/>
           </svg>
-        </motion.div>
+        </div>
 
         {/* Featured: title overlaid on image bottom */}
         {featured && (
@@ -172,13 +174,13 @@ function PortfolioCard({ project, basePath, prefersReduced, featured = false }: 
           <p style={{ color: 'var(--color-fg-muted)', fontSize: '0.8125rem', lineHeight: 1.6, maxWidth: '65%' }} className="line-clamp-1">
             {project.shortDescription}
           </p>
-          <span style={{
+          <span className="hidden sm:flex case-open-link" style={{
             fontSize: '10px', fontWeight: 600, letterSpacing: '0.18em',
             textTransform: 'uppercase', color: 'var(--color-accent)',
-            display: 'flex', alignItems: 'center', gap: '0.35rem',
+            alignItems: 'center', gap: '0.35rem',
           }}>
             Открыть кейс
-            <svg width="10" height="10" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+            <svg className="case-open-arrow" width="10" height="10" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
               <line x1="0" y1="14" x2="14" y2="0"/>
               <polyline points="5,0 14,0 14,9"/>
             </svg>
@@ -201,9 +203,9 @@ export default function PortfolioGrid({ projects, basePath = '/portfolio' }: Pro
       whileInView="visible"
       viewport={{ once: true, margin: '-60px' }}
     >
-      {/* Featured card — full width */}
+      {/* Featured card — clip-path curtain reveal */}
       {featured && (
-        <motion.div variants={fadeLeft}>
+        <motion.div variants={clipReveal} style={{ overflow: 'hidden', borderRadius: '1rem' }}>
           <PortfolioCard project={featured} basePath={basePath} prefersReduced={!!prefersReduced} featured />
         </motion.div>
       )}

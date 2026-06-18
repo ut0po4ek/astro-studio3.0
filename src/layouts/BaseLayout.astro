@@ -3,6 +3,7 @@ import '../styles/global.css';
 import { ClientRouter } from 'astro:transitions';
 import { siteConfig } from '../config/site';
 import CustomCursor from '../components/ui/CustomCursor';
+import CookieConsent from '../components/ui/CookieConsent.astro';
 
 interface Props {
   title?: string;
@@ -80,7 +81,7 @@ const ogImageUrl = new URL(ogImage, siteUrl).href;
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600&display=swap"
       rel="stylesheet"
     />
 
@@ -90,19 +91,53 @@ const ogImageUrl = new URL(ogImage, siteUrl).href;
   <body>
     <CustomCursor client:load />
     <slot />
+    <CookieConsent />
+
+    <!-- Magnetic button effect — event delegation, never touches React-managed DOM attrs -->
+    <script is:inline>
+      (function () {
+        function onMove(e) {
+          var el = e.target && e.target.closest('.btn-primary, .btn-secondary');
+          if (!el) return;
+          var r  = el.getBoundingClientRect();
+          var dx = (e.clientX - (r.left + r.width  / 2)) * 0.10;
+          var dy = (e.clientY - (r.top  + r.height / 2)) * 0.10;
+          el.style.setProperty('--mx', dx + 'px');
+          el.style.setProperty('--my', dy + 'px');
+          el.style.transition = 'transform 150ms ease, box-shadow 360ms ease, filter 360ms ease';
+        }
+        function onLeave(e) {
+          var el = (e.target instanceof Element) ? e.target.closest('.btn-primary, .btn-secondary') : null;
+          if (!el) return;
+          el.style.setProperty('--mx', '0px');
+          el.style.setProperty('--my', '0px');
+          el.style.transition = 'transform 450ms cubic-bezier(0.34,1.56,0.64,1), box-shadow 360ms ease, filter 360ms ease';
+        }
+        if (document.documentElement.dataset.magneticBound !== 'true') {
+          document.documentElement.dataset.magneticBound = 'true';
+          document.addEventListener('mousemove',  onMove,  { passive: true });
+          document.addEventListener('mouseleave', onLeave, { passive: true, capture: true });
+        }
+      })();
+    </script>
 
     <script>
       let revealObserver: IntersectionObserver | null = null;
+      let sectionRevealObserver: IntersectionObserver | null = null;
       let legacyRevealObserver: IntersectionObserver | null = null;
       let revealFrame = 0;
       let scrollLineFrame = 0;
       let revealTimer = 0;
       let revealAfterTransition = false;
+      // CSS animation-timeline calibration: set once per page load, reset on navigation
+      let scrollLineCssCalibrated = false;
 
       function disconnectRevealObservers() {
         revealObserver?.disconnect();
+        sectionRevealObserver?.disconnect();
         legacyRevealObserver?.disconnect();
         revealObserver = null;
+        sectionRevealObserver = null;
         legacyRevealObserver = null;
       }
 
@@ -161,6 +196,7 @@ const ogImageUrl = new URL(ogImage, siteUrl).href;
           return;
         }
 
+        // ── Item-level observer (fires inside viewport) ──
         if (!revealObserver) {
           revealObserver = new IntersectionObserver(
             (entries) => {
@@ -184,6 +220,29 @@ const ogImageUrl = new URL(ogImage, siteUrl).href;
           } else {
             revealObserver?.observe(el);
           }
+        });
+
+        // ── Section-level observer (fires 220px BEFORE entering viewport) ──
+        // This gives sections time to start their entrance animation so the user
+        // sees the drift/rise WHILE the section scrolls into view — not after.
+        if (!sectionRevealObserver) {
+          sectionRevealObserver = new IntersectionObserver(
+            (entries) => {
+              entries.forEach((entry) => {
+                if (!entry.isIntersecting) return;
+                const el = entry.target as HTMLElement;
+                revealElement(el);
+                sectionRevealObserver?.unobserve(el);
+              });
+            },
+            { threshold: 0, rootMargin: '0px 0px 220px 0px' }
+          );
+        }
+
+        document.querySelectorAll<HTMLElement>('[data-reveal-section]:not(.is-visible)').forEach((el) => {
+          if (el.dataset.revealBound === 'true' && sectionRevealObserver) return;
+          el.dataset.revealBound = 'true';
+          sectionRevealObserver?.observe(el);
         });
 
         if (!legacyRevealObserver) {
@@ -213,6 +272,12 @@ const ogImageUrl = new URL(ogImage, siteUrl).href;
       }
 
       // ── Scroll Line ─────────────────────────────────────
+      // Modern browsers (Chrome 115+, Safari 17.2+, Firefox 110+) use CSS
+      // animation-timeline: scroll() — runs on the compositor, no JS timing
+      // issues, fill/drain automatic. JS only calibrates the start/end %.
+      // Old browsers fall back to the JS-driven dashoffset calculation.
+      const cssAnimSupported = typeof CSS !== 'undefined' && CSS.supports('animation-timeline: scroll()');
+
       function updateScrollLine() {
         scrollLineFrame = 0;
         const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -222,38 +287,74 @@ const ogImageUrl = new URL(ogImage, siteUrl).href;
           const paths = region.querySelectorAll<SVGPathElement>('.scroll-line-progress');
           const wrap = region.querySelector<HTMLElement>('.scroll-line-wrap');
           const hero = region.querySelector<HTMLElement>('#hero');
-          const end = region.querySelector<HTMLElement>('#project-cta');
           if (!paths.length) return;
 
+          // ── Top: start wrap after hero ──
           if (wrap && hero) {
             wrap.style.setProperty('--scroll-line-top', `${hero.offsetHeight}px`);
           }
-          if (wrap && end) {
-            const bottomOffset = region.offsetHeight - end.offsetTop - end.offsetHeight;
-            wrap.style.setProperty('--scroll-line-bottom', `${Math.max(0, bottomOffset)}px`);
+
+          // ── Bottom: clip wrap at sticky-stack top (Hero → FeaturedWork only).
+          //    Use offsetTop chain (layout-stable) NOT getBoundingClientRect —
+          //    #process is position:sticky → getBCR().top = 0 when stuck → wrong. ──
+          const stickyStack = region.querySelector<HTMLElement>('.sticky-stack');
+          const mainEl = region as HTMLElement;
+          let offsetFromMain = 0;
+          if (stickyStack) {
+            let el: HTMLElement | null = stickyStack;
+            while (el && el !== mainEl) {
+              offsetFromMain += el.offsetTop;
+              el = el.offsetParent as HTMLElement | null;
+            }
+            if (offsetFromMain > 0 && wrap) {
+              const bottomClip = Math.max(0, mainEl.offsetHeight - offsetFromMain);
+              wrap.style.setProperty('--scroll-line-bottom', `${bottomClip}px`);
+            }
           }
 
           if (reduced) {
             paths.forEach((path) => {
-              const len = path.dataset.pathLength
-                ? Number(path.dataset.pathLength)
-                : path.getTotalLength();
-              path.dataset.pathLength = String(len);
-              path.style.strokeDasharray = `${len} ${len}`;
+              // Inline style overrides CSS animation for reduced-motion
+              path.style.strokeDasharray = '5565 5565';
               path.style.strokeDashoffset = '0';
             });
             return;
           }
 
+          // ── CSS animation-timeline path (modern browsers) ──
+          // Calibrate start/end percentages once; CSS handles all fill/drain.
+          if (cssAnimSupported) {
+            if (!scrollLineCssCalibrated && hero && offsetFromMain > 0) {
+              const maxScroll = Math.max(1, document.documentElement.scrollHeight - viewport);
+              const startPct = Math.max(0, Math.floor(hero.offsetHeight / maxScroll * 100));
+              const endPct = Math.min(99, Math.ceil(offsetFromMain / maxScroll * 100));
+              if (endPct > startPct) {
+                document.documentElement.style.setProperty('--scroll-line-start', `${startPct}%`);
+                document.documentElement.style.setProperty('--scroll-line-end', `${endPct}%`);
+                scrollLineCssCalibrated = true;
+              }
+            }
+            // Clear any previously JS-set inline styles that would override CSS animation
+            paths.forEach((path) => {
+              if (path.style.strokeDasharray) path.style.strokeDasharray = '';
+              if (path.style.strokeDashoffset) path.style.strokeDashoffset = '';
+            });
+            return; // CSS animation-timeline handles dashoffset — no JS needed
+          }
+
+          // ── JS fallback (old browsers without animation-timeline) ──
           const rect = (wrap ?? region).getBoundingClientRect();
           const drawPoint = viewport * 0.58;
           const progress = Math.min(1, Math.max(0, (drawPoint - rect.top) / Math.max(rect.height, 1)));
 
           paths.forEach((path) => {
-            const len = path.dataset.pathLength
-              ? Number(path.dataset.pathLength)
-              : path.getTotalLength();
-            if (!path.dataset.pathLength) path.dataset.pathLength = String(len);
+            // Guard: never cache len=0 — "0" is truthy in JS, would cause
+            // strokeDasharray:"0 0" which draws the full path as a solid flash.
+            const cached = path.dataset.pathLength ? Number(path.dataset.pathLength) : 0;
+            const measured = cached > 0 ? cached : path.getTotalLength();
+            const len = measured > 0 ? measured : 0;
+            if (len > 0 && !path.dataset.pathLength) path.dataset.pathLength = String(len);
+            if (len === 0) return; // path not yet renderable, skip frame
             path.style.strokeDasharray = `${len} ${len}`;
             path.style.strokeDashoffset = String((len * (1 - progress)).toFixed(2));
           });
@@ -282,9 +383,16 @@ const ogImageUrl = new URL(ogImage, siteUrl).href;
           delete el.dataset.revealBound;
           el.style.transitionDelay = '';
         });
+        document.querySelectorAll<HTMLElement>('[data-reveal-section]').forEach(el => {
+          delete el.dataset.revealBound;
+        });
         document.querySelectorAll<SVGPathElement>('.scroll-line-progress').forEach((p) => {
           delete p.dataset.pathLength;
         });
+        // Reset CSS animation-timeline calibration so the new page re-calibrates
+        scrollLineCssCalibrated = false;
+        document.documentElement.style.removeProperty('--scroll-line-start');
+        document.documentElement.style.removeProperty('--scroll-line-end');
         scrollLineFrame = 0;
       });
 

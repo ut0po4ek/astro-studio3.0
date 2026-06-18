@@ -8,7 +8,7 @@ function isActive(href: string) {
 }
 ---
 
-<header id="site-header" class="site-header" data-state="hero" aria-label="Шапка сайта">
+<header id="site-header" class="site-header" data-state="hero" transition:persist transition:name="site-header" aria-label="Шапка сайта">
   <div class="container-site">
     <div class="flex items-center justify-between" style="height: var(--header-h, 72px);">
 
@@ -182,17 +182,15 @@ function isActive(href: string) {
 </div>
 
 <style>
-  /* ─── Glass token system ─────────────────────────────── */
+  /* ─── Premium glass header ──────────────────────────── */
   .site-header {
     position: fixed;
     top: 0; left: 0; right: 0;
     z-index: 50;
 
-    /* Safari + standard backdrop-filter */
-    -webkit-backdrop-filter: blur(18px) saturate(150%);
-    backdrop-filter: blur(18px) saturate(150%);
+    -webkit-backdrop-filter: blur(40px) saturate(200%);
+    backdrop-filter: blur(40px) saturate(200%);
 
-    /* Glass tokens driven by CSS theme variables */
     --h-bg:     var(--glass-hero-bg);
     --h-border: var(--glass-hero-border);
     --h-text:   var(--glass-hero-text);
@@ -200,24 +198,67 @@ function isActive(href: string) {
     --h-cta-bd: var(--glass-hero-cta-bd);
 
     background: var(--h-bg);
-    border-bottom: 1px solid var(--h-border);
     color: var(--h-text);
 
+    /* Gradient border bottom instead of solid line */
+    border-bottom: none;
+    box-shadow: 0 1px 0 0 var(--h-border);
+
     transition:
-      background-color 420ms cubic-bezier(0.4, 0, 0.2, 1),
-      border-color     420ms cubic-bezier(0.4, 0, 0.2, 1),
-      color            420ms cubic-bezier(0.4, 0, 0.2, 1),
-      box-shadow       420ms cubic-bezier(0.4, 0, 0.2, 1);
+      background 420ms cubic-bezier(0.4, 0, 0.2, 1),
+      box-shadow 420ms cubic-bezier(0.4, 0, 0.2, 1),
+      color      420ms cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  /* ─── Scrolled / light-page state ───────────────────── */
+  /* Subtle gradient underline drawn via pseudo-element */
+  .site-header::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 1px;
+    background: var(--gradient-accent);
+    opacity: 0;
+    transition: opacity 420ms ease;
+  }
+  .site-header[data-state="scrolled"]::after,
+  .site-header[data-state="page-hero"]::after { opacity: 0.18; }
+
+  /* ─── Scrolled state ─────────────────────────────────── */
   .site-header[data-state="scrolled"] {
     --h-bg:     var(--glass-scroll-bg);
     --h-border: var(--glass-scroll-border);
     --h-text:   var(--glass-scroll-text);
     --h-text-m: var(--glass-scroll-text-m);
     --h-cta-bd: var(--glass-scroll-cta-bd);
-    box-shadow: 0 1px 24px rgba(0,0,0,0.06);
+    box-shadow: 0 4px 32px rgba(0,0,0,0.18), 0 1px 0 0 var(--h-border);
+  }
+
+  /*
+   * Inner-page shader hero — .page-hero is ALWAYS dark (#020207) regardless
+   * of theme. Use a dark-glass header with light text for readability.
+   * Distinguishable from main-page "hero" state by the "page-hero" value.
+   */
+  .site-header[data-state="page-hero"] {
+    --h-bg:     var(--glass-hero-bg);
+    --h-border: var(--glass-hero-border);
+    --h-text:   var(--glass-hero-text);
+    --h-text-m: var(--glass-hero-text-m);
+    --h-cta-bd: var(--glass-hero-cta-bd);
+  }
+  :global([data-theme="light"]) .site-header[data-state="page-hero"] {
+    --h-bg:     rgba(8, 8, 18, 0.22);
+    --h-border: rgba(129, 140, 248, 0.14);
+    --h-text:   rgba(226, 232, 240, 0.95);
+    --h-text-m: rgba(226, 232, 240, 0.55);
+    --h-cta-bd: rgba(129, 140, 248, 0.40);
+  }
+
+  /*
+   * Main page hero — light theme: lavender canvas bg (#f6f4ff).
+   * Keep dark indigo text, just make glass slightly more opaque for legibility.
+   */
+  :global([data-theme="light"]) .site-header[data-state="hero"] {
+    --h-bg: rgba(248, 246, 255, 0.62);
   }
 
   /* Fallback: solid background for browsers without backdrop-filter support */
@@ -287,16 +328,37 @@ function isActive(href: string) {
   .header-cta {
     color: var(--h-text);
     border: 1px solid var(--h-cta-bd);
+    position: relative;
+    overflow: hidden;
     transition:
       color        300ms ease,
       border-color 300ms ease,
-      background   300ms ease;
+      box-shadow   300ms ease;
+  }
+  .header-cta::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--gradient-accent);
+    opacity: 0;
+    transition: opacity 300ms ease;
   }
   .header-cta:hover {
-    background: rgba(181, 164, 138, 0.15);
-    border-color: var(--color-accent);
-    color: var(--h-text);
+    border-color: rgba(129, 140, 248, 0.70);
+    box-shadow: 0 0 18px rgba(129,140,248,0.22);
+    /* No color override — text stays var(--h-text).
+       The gradient fill (::before) provides visual feedback without
+       making text invisible in light theme. */
   }
+  .header-cta:hover::before { opacity: 0.12; }
+
+  /* Light theme: border becomes clearly visible indigo on hover */
+  :global([data-theme="light"]) .header-cta:hover {
+    border-color: rgba(79, 70, 229, 0.65);
+    box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.10);
+    background: rgba(79, 70, 229, 0.06);
+  }
+  :global([data-theme="light"]) .header-cta:hover::before { opacity: 0; }
 
   /* ─── Burger lines ───────────────────────────────────── */
   .burger-line {
@@ -464,9 +526,23 @@ function isActive(href: string) {
   function resolveHeaderState() {
     const header = document.getElementById('site-header');
     if (!header) return;
+
+    // Inner pages: check .page-hero FIRST — inner pages also have id="hero",
+    // so checking by id alone would incorrectly apply the main-page "hero" state.
+    const pageHero = document.querySelector<HTMLElement>('.page-hero');
+    if (pageHero) {
+      header.dataset.state = pageHero.getBoundingClientRect().bottom < 72 ? 'scrolled' : 'page-hero';
+      return;
+    }
+
+    // Main page: full-height #hero section (no .page-hero class)
     const hero = document.getElementById('hero');
-    if (!hero) { header.dataset.state = 'scrolled'; return; }
-    header.dataset.state = hero.getBoundingClientRect().bottom < 72 ? 'scrolled' : 'hero';
+    if (hero) {
+      header.dataset.state = hero.getBoundingClientRect().bottom < 72 ? 'scrolled' : 'hero';
+      return;
+    }
+
+    header.dataset.state = 'scrolled';
   }
 
   function closeMobileMenu() {
@@ -557,6 +633,9 @@ function isActive(href: string) {
       document.documentElement.dataset.themeOutsideBound = 'true';
       document.addEventListener('click', (event) => {
         if (!themeMenuOpen) return;
+        // Guard: during Astro view transitions click events can fire with a
+        // non-Element target (e.g. document), which has no .contains() method.
+        if (!(event.target instanceof Element)) return;
         const btn = document.getElementById('theme-btn');
         const menu = document.getElementById('theme-menu');
         if (btn && menu && !btn.contains(event.target as Node) && !menu.contains(event.target as Node)) closeThemeMenu();
@@ -570,10 +649,28 @@ function isActive(href: string) {
     }
   }
 
+  // Update aria-current on nav links to reflect current page.
+  // Called every time initHeaderChrome runs (including after view-transition
+  // navigations) because transition:persist keeps the header in place so SSR
+  // can't refresh the active-link attribute for us.
+  function updateNavActive() {
+    const pathname = window.location.pathname;
+    document.querySelectorAll<HTMLAnchorElement>('.header-nav-link').forEach(link => {
+      const href = link.getAttribute('href') ?? '';
+      const active = href === '/' ? pathname === '/' : pathname === href || pathname.startsWith(href + '/');
+      if (active) {
+        link.setAttribute('aria-current', 'page');
+      } else {
+        link.removeAttribute('aria-current');
+      }
+    });
+  }
+
   function initHeaderChrome() {
     initHeaderState();
     initMobileMenu();
     initThemeSwitcher();
+    updateNavActive();
   }
 
   if (document.readyState === 'loading') {
@@ -585,5 +682,31 @@ function isActive(href: string) {
   if (document.documentElement.dataset.headerPageLoadBound !== 'true') {
     document.documentElement.dataset.headerPageLoadBound = 'true';
     document.addEventListener('astro:page-load', initHeaderChrome);
+  }
+
+  // Pre-update header state BEFORE the view transition animation starts so
+  // the header is already in the correct state when the new page content
+  // fades in — prevents the 420 ms CSS transition from running post-navigation.
+  if (document.documentElement.dataset.headerBeforeSwapBound !== 'true') {
+    document.documentElement.dataset.headerBeforeSwapBound = 'true';
+    document.addEventListener('astro:before-swap', (event) => {
+      const header = document.getElementById('site-header');
+      if (!header) return;
+      const newDoc = (event as unknown as { newDocument: Document }).newDocument;
+      const hasHero     = !!newDoc?.getElementById('hero');
+      const hasPageHero = !!newDoc?.querySelector('.page-hero');
+      // Snap without CSS transition so no animation plays during/after navigation
+      header.style.transition = 'none';
+      // Main-page hero → 'hero', inner-page shader hero → 'page-hero', else → 'scrolled'
+      header.dataset.state = hasPageHero ? 'page-hero' : hasHero ? 'hero' : 'scrolled';
+      // Restore transition after two frames (once the new page is visible)
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          if (document.getElementById('site-header')) {
+            document.getElementById('site-header')!.style.transition = '';
+          }
+        });
+      });
+    });
   }
 </script>

@@ -35,11 +35,14 @@ export const siteConfig = {
   footer: {
     tagline: 'Создаём сайты, которые выглядят дорого и помогают продавать.',
     ctaText: 'Расскажите о проекте — предложим формат, сроки и следующий шаг.',
-    privacyHref: 'about:blank',
+    legal: [
+      { label: 'Политика конфиденциальности', href: '/privacy' },
+      { label: 'Политика cookies',            href: '/cookies' },
+    ],
   },
 
   forms: {
-    contactEndpoint: '/.netlify/functions/contact',
+    contactEndpoint: '/api/contact',
     source: 'Astro Studio',
   },
 

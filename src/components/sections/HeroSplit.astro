@@ -1,11 +1,12 @@
 ---
 import ProjectSliderIsland from './ProjectSlider';
 import HeroText from './HeroText';
+import HeroCanvas from './HeroCanvas';
 import { siteConfig } from '../../config/site';
 import { getFeaturedProjects } from '../../data/portfolio';
 
 const statsItems = [
-  { value: '4', label: 'проекта' },
+  { value: '47', label: 'проектов' },
   { value: '100%', label: 'адаптивность' },
   { value: '→', label: 'запуск под ключ' },
 ];
@@ -21,45 +22,23 @@ const sliderProjects = getFeaturedProjects().map(p => ({
 
 <section
   id="hero"
-  class="relative min-h-screen flex items-center overflow-hidden"
-  style="background: var(--color-bg);"
+  class="relative min-h-dvh flex items-center hero-bg"
   aria-label="Главный экран"
 >
-  <!-- Animated gradient orbs -->
-  <div class="orb orb-1" style="width:600px;height:600px;top:-100px;left:-150px;background:radial-gradient(ellipse,rgba(129,140,248,0.22) 0%,transparent 70%);" aria-hidden="true"></div>
-  <div class="orb orb-2" style="width:500px;height:500px;top:30%;right:-100px;background:radial-gradient(ellipse,rgba(192,132,252,0.18) 0%,transparent 70%);" aria-hidden="true"></div>
-  <div class="orb orb-3" style="width:400px;height:400px;bottom:0;left:40%;background:radial-gradient(ellipse,rgba(99,102,241,0.15) 0%,transparent 70%);" aria-hidden="true"></div>
+  <!-- WebGL simplex noise shader — fluid dark background, highlights on mouse move -->
+  <HeroCanvas client:load />
 
-  <!-- Grid pattern overlay -->
-  <div class="absolute inset-0 bg-grid-pattern pointer-events-none" aria-hidden="true"></div>
+  <!-- Bottom gradient fade — transitions shader into page body -->
+  <div class="hero-fade-bottom" aria-hidden="true"></div>
 
-  <!-- Decorative curved SVG line (scroll-drawn) -->
-  <div class="hero-curve-wrap absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
-    <svg
-      class="hero-curve-svg absolute"
-      style="left: 50%; top: 18%; transform: translateX(-50%); width: 80vw; max-width: 900px; opacity: 0.45;"
-      viewBox="0 0 900 220"
-      fill="none"
-      preserveAspectRatio="none"
-    >
-      <path
-        id="hero-curve-path"
-        d="M 0,110 C 120,20 240,200 360,110 C 480,20 600,200 720,110 C 800,50 860,130 900,110"
-        stroke="var(--color-accent)"
-        stroke-width="1"
-        fill="none"
-        stroke-linecap="round"
-      />
-    </svg>
-  </div>
+  <!-- Subtle vertical rule — gives grid structure without decoration -->
+  <div class="hero-vline" aria-hidden="true"></div>
 
-  <div class="hero-vertical-line" aria-hidden="true"></div>
+  <div class="container-site w-full py-28 md:py-36 relative z-10">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
 
-  <div class="container-site w-full py-24 md:py-32 relative z-10">
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-
-      <!-- Left: text island -->
-      <div class="flex flex-col gap-6 lg:gap-8">
+      <!-- Left: text -->
+      <div class="flex flex-col">
         <HeroText
           client:load
           ctaHref={siteConfig.cta.href}
@@ -69,145 +48,152 @@ const sliderProjects = getFeaturedProjects().map(p => ({
         />
       </div>
 
-      <!-- Right: slider -->
+      <!-- Right: project slider -->
       <div class="relative" data-reveal data-reveal-delay="200">
         <ProjectSliderIsland client:load projects={sliderProjects} />
       </div>
+
     </div>
   </div>
 </section>
 
 <style>
-  /* Animated orbs */
-  .orb {
+  /* Bottom gradient: shader → page background */
+  .hero-fade-bottom {
     position: absolute;
-    border-radius: 50%;
+    left: 0; right: 0; bottom: 0;
+    height: 200px;
+    background: linear-gradient(to bottom, transparent, var(--color-bg));
     pointer-events: none;
-    z-index: 0;
-    will-change: transform;
+    z-index: 1;
   }
 
-  .orb-1 {
-    animation: orb-float-1 18s ease-in-out infinite;
-  }
-  .orb-2 {
-    animation: orb-float-2 22s ease-in-out infinite;
-  }
-  .orb-3 {
-    animation: orb-float-3 16s ease-in-out infinite;
-  }
-
-  @keyframes orb-float-1 {
-    0%, 100% { transform: translate(0, 0) scale(1); }
-    33%       { transform: translate(30px, 20px) scale(1.04); }
-    66%       { transform: translate(-20px, 40px) scale(0.97); }
-  }
-  @keyframes orb-float-2 {
-    0%, 100% { transform: translate(0, 0) scale(1); }
-    40%       { transform: translate(-40px, -25px) scale(1.05); }
-    70%       { transform: translate(20px, 30px) scale(0.96); }
-  }
-  @keyframes orb-float-3 {
-    0%, 100% { transform: translate(0, 0) scale(1); }
-    50%       { transform: translate(25px, -35px) scale(1.06); }
-  }
-
-  /* Grid pattern */
-  .bg-grid-pattern {
-    background-image:
-      linear-gradient(var(--color-border, rgba(255,255,255,0.05)) 1px, transparent 1px),
-      linear-gradient(90deg, var(--color-border, rgba(255,255,255,0.05)) 1px, transparent 1px);
-    background-size: 60px 60px;
-    opacity: 0.4;
-    z-index: 0;
-  }
-
-  /* Offset border — fades in and slides from slight offset */
-  @keyframes hero-border-in {
-    from {
-      opacity: 0;
-      transform: translate(8px, -8px);
-    }
-    to {
-      opacity: 1;
-      transform: translate(0, 0);
-    }
-  }
-  .hero-offset-border {
-    animation: hero-border-in 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.8s both;
-  }
-
-  @keyframes hero-line-y {
-    from {
-      opacity: 0;
-      transform: scaleY(0);
-    }
-    to {
-      opacity: 1;
-      transform: scaleY(1);
-    }
-  }
-
-  .hero-vertical-line {
+  /* ── Vertical axis — structural grid line with scan particle ── */
+  .hero-vline {
     position: absolute;
-    top: 12%;
-    bottom: 12%;
+    top: 10%;
+    bottom: 10%;
     left: 50%;
     width: 1px;
-    z-index: 1;
+    z-index: 2;
     pointer-events: none;
-    transform-origin: top;
+    transform-origin: top center;
+    overflow: visible;
+
+    /* Gradient line: transparent → indigo peak at center → transparent */
     background: linear-gradient(
       to bottom,
-      transparent,
-      var(--color-border) 16%,
-      var(--color-border) 84%,
-      transparent
+      transparent 0%,
+      rgba(129, 140, 248, 0.28) 18%,
+      rgba(192, 132, 252, 0.55) 50%,
+      rgba(129, 140, 248, 0.28) 82%,
+      transparent 100%
     );
-    animation: hero-line-y 1.1s cubic-bezier(0.16, 1, 0.3, 1) 0.45s both;
+
+    /* Ambient line glow */
+    box-shadow:
+      0 0 4px rgba(129, 140, 248, 0.12),
+      0 0 12px rgba(192, 132, 252, 0.06);
+
+    animation: vline-in 1.1s cubic-bezier(0.16, 1, 0.3, 1) 0.5s both;
+  }
+
+  /* ── Scan particle — travels top→bottom on loop ── */
+  .hero-vline::before {
+    content: '';
+    position: absolute;
+    left: -3px;
+    top: 0%;
+    width: 7px;
+    height: 28px;
+    border-radius: 4px;
+
+    background: linear-gradient(
+      to bottom,
+      transparent 0%,
+      rgba(192, 132, 252, 0.85) 40%,
+      rgba(129, 140, 248, 0.95) 60%,
+      transparent 100%
+    );
+    filter: blur(0.5px);
+    box-shadow:
+      0 0 6px 1px rgba(129, 140, 248, 0.45),
+      0 0 14px 2px rgba(192, 132, 252, 0.22);
+
+    /* Particle starts after line draws in (1.6s) */
+    animation: scan-particle 5s cubic-bezier(0.45, 0, 0.55, 1) 1.8s infinite;
+    opacity: 0;
+  }
+
+  /* ── Crosshair node — small ring at the vertical midpoint ── */
+  .hero-vline::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: -4px;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    transform: translateY(-50%);
+    border: 1px solid rgba(192, 132, 252, 0.50);
+    background: rgba(129, 140, 248, 0.10);
+    box-shadow:
+      0 0 6px rgba(192, 132, 252, 0.30),
+      inset 0 0 4px rgba(129, 140, 248, 0.15);
+
+    /* Slow breathe pulse */
+    animation: node-pulse 3s ease-in-out 2.2s infinite;
+  }
+
+  @keyframes vline-in {
+    from { transform: scaleY(0); opacity: 0; }
+    to   { transform: scaleY(1); opacity: 1; }
+  }
+
+  @keyframes scan-particle {
+    0%   { top: 0%;               opacity: 0;   }
+    4%   { opacity: 1;             }
+    48%  { top: calc(100% - 28px); opacity: 0.8; }
+    51%  { top: calc(100% - 28px); opacity: 0;   }
+    52%  { top: 0%;               opacity: 0;   }
+    56%  { opacity: 1;             }
+    96%  { top: calc(100% - 28px); opacity: 0.8; }
+    100% { top: calc(100% - 28px); opacity: 0;   }
+  }
+
+  @keyframes node-pulse {
+    0%, 100% {
+      box-shadow: 0 0 6px rgba(192, 132, 252, 0.30), inset 0 0 4px rgba(129, 140, 248, 0.15);
+      border-color: rgba(192, 132, 252, 0.50);
+    }
+    50% {
+      box-shadow: 0 0 12px rgba(192, 132, 252, 0.55), 0 0 24px rgba(129, 140, 248, 0.18), inset 0 0 6px rgba(129, 140, 248, 0.25);
+      border-color: rgba(192, 132, 252, 0.80);
+    }
   }
 
   @media (max-width: 1023px) {
-    .hero-vertical-line {
-      display: none;
-    }
-  }
-
-  /* Curved SVG path draw-in animation */
-  @keyframes curve-draw {
-    from { stroke-dashoffset: var(--path-length, 2000); }
-    to   { stroke-dashoffset: 0; }
-  }
-  #hero-curve-path {
-    stroke-dasharray: 2000;
-    stroke-dashoffset: 2000;
-    animation: curve-draw 2.4s cubic-bezier(0.16, 1, 0.3, 1) 0.6s both;
+    .hero-vline { display: none; }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .orb-1, .orb-2, .orb-3 {
-      animation: none !important;
-    }
-    .hero-offset-border,
-    .hero-vertical-line,
-    #hero-curve-path {
-      animation: none !important;
+    .hero-vline {
+      animation: none;
       opacity: 1;
       transform: none;
     }
+    .hero-vline::before { animation: none; display: none; }
+    .hero-vline::after  { animation: none; }
   }
+
+  /* Hero background matches the shader's initial clearColor so there's no
+     flash/blank frame during Astro view-transition unmount/remount of the
+     React <HeroCanvas> component. Override per theme. */
+  .hero-bg {
+    background: #020206; /* DARK_PALETTE.canvasBg */
+  }
+  [data-theme="light"] .hero-bg {
+    background: #f6f4ff; /* LIGHT_PALETTE.canvasBg */
+  }
+
 </style>
-
-<script>
-  function initHeroCurve() {
-    const path = document.getElementById('hero-curve-path') as SVGPathElement | null;
-    if (!path) return;
-    const length = path.getTotalLength();
-    path.style.strokeDasharray = String(length);
-    path.style.strokeDashoffset = String(length);
-    path.style.animation = `curve-draw 2.4s cubic-bezier(0.16, 1, 0.3, 1) 0.6s both`;
-  }
-
-  document.addEventListener('astro:page-load', initHeroCurve);
-  initHeroCurve();
-</script>

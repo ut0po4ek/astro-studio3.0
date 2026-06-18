@@ -14,70 +14,123 @@ export default function ProcessSteps({ steps }: Props) {
   const prefersReduced = useReducedMotion();
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
       {steps.map((step, i) => (
         <motion.div
           key={step.number}
-          className="group"
+          className="process-step group"
           style={{
-            display: 'flex', gap: '1.5rem', alignItems: 'flex-start',
-            padding: '1.5rem', borderRadius: '0.75rem',
-            border: '1px solid transparent',
             position: 'relative',
+            display: 'grid',
+            gridTemplateColumns: '4.5rem 1fr',
+            gap: '1.75rem',
+            padding: '2rem 4rem 2rem 1rem',
+            minHeight: '10.5rem',
+            borderTop: '1px solid var(--color-border)',
+            cursor: 'default',
+            overflow: 'hidden',
           }}
-          initial={prefersReduced ? {} : { opacity: 0, x: -20 }}
+          initial={prefersReduced ? {} : { opacity: 0, x: i % 2 === 0 ? -52 : 52 }}
           whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true, margin: '-40px' }}
-          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: i * 0.12 }}
+          viewport={{ once: true, margin: '-30px' }}
+          transition={{ duration: 0.72, ease: [0.16, 1, 0.3, 1], delay: i * 0.12 }}
           whileHover={prefersReduced ? {} : {
-            x: 4,
-            borderColor: 'var(--color-border-bright)',
-            backgroundColor: 'var(--color-bg-elevated)',
+            y: -6,
+            transition: { type: 'spring', stiffness: 320, damping: 26 },
           }}
         >
-          {/* Connecting line (not on last item) */}
-          {i < steps.length - 1 && (
-            <motion.div
-              style={{
-                position: 'absolute', left: '2.75rem', top: '100%',
-                width: '1px', height: '100%', transformOrigin: 'top',
-                background: 'linear-gradient(to bottom, var(--color-border-bright), transparent)',
-                zIndex: 0,
-              }}
-              initial={prefersReduced ? {} : { scaleY: 0 }}
-              whileInView={{ scaleY: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1], delay: i * 0.12 + 0.4 }}
-            />
-          )}
-
-          {/* Number */}
-          <motion.span
-            style={{
-              fontSize: 'clamp(2rem, 4vw, 2.75rem)', fontWeight: 200,
-              letterSpacing: '-0.04em', lineHeight: 1, flexShrink: 0, width: '3rem',
-              color: 'var(--color-border)',
-              position: 'relative', zIndex: 1,
-            }}
-            whileInView={{ color: 'var(--color-accent)', textShadow: '0 0 18px rgba(129,140,248,0.4)' }}
-            viewport={{ once: true }}
-            transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1], delay: i * 0.12 + 0.2 }}
+          {/* Hover sweep — triggered by parent hover, no pointer events needed */}
+          <motion.div
             aria-hidden="true"
+            className="process-step-sweep"
+            style={{
+              position: 'absolute',
+              inset: 0,
+              background: 'linear-gradient(90deg, rgba(129,140,248,0.07) 0%, transparent 65%)',
+              opacity: 0,
+              pointerEvents: 'none',
+              transition: 'opacity 280ms ease',
+            }}
+          />
+
+          {/* Giant background number — blooms in separately with scale */}
+          <motion.span
+            aria-hidden="true"
+            style={{
+              position: 'absolute',
+              right: '0.5rem',
+              top: '50%',
+              translateY: '-50%',
+              fontSize: 'clamp(5rem, 10vw, 8rem)',
+              fontWeight: 200,
+              letterSpacing: '-0.06em',
+              lineHeight: 1,
+              color: 'var(--color-border)',
+              opacity: 0.35,
+              pointerEvents: 'none',
+              userSelect: 'none',
+              fontVariantNumeric: 'tabular-nums',
+              transition: 'color 0.5s ease, opacity 0.5s ease',
+            }}
+            className="step-bg-num"
+            initial={prefersReduced ? {} : { opacity: 0, scale: 1.4 }}
+            whileInView={{ opacity: 0.35, scale: 1 }}
+            viewport={{ once: true, margin: '-30px' }}
+            transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1], delay: i * 0.12 + 0.2 }}
           >
             {step.number}
           </motion.span>
 
+          {/* Visible step number */}
+          <motion.div
+            style={{ paddingTop: '0.2rem', position: 'relative', zIndex: 1 }}
+            initial={prefersReduced ? {} : { color: 'var(--color-border)' }}
+            whileInView={{ color: 'var(--color-accent)' }}
+            viewport={{ once: true }}
+            transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: i * 0.11 + 0.25 }}
+          >
+            <span
+              style={{
+                fontSize: 'clamp(2rem, 4vw, 2.75rem)',
+                fontWeight: 200,
+                letterSpacing: '-0.04em',
+                lineHeight: 1,
+                display: 'block',
+                fontVariantNumeric: 'tabular-nums',
+                textShadow: '0 0 20px rgba(129,140,248,0.35)',
+              }}
+            >
+              {step.number}
+            </span>
+          </motion.div>
+
           {/* Content */}
-          <div style={{ position: 'relative', zIndex: 1 }}>
-            <h3 style={{ fontSize: '1rem', fontWeight: 500, color: 'var(--color-fg)', marginBottom: '0.375rem' }}>
+          <div style={{ position: 'relative', zIndex: 1, paddingTop: '0.25rem' }}>
+            <h3
+              style={{
+                fontSize: 'clamp(1rem, 1.6vw, 1.15rem)',
+                fontWeight: 500,
+                color: 'var(--color-fg)',
+                marginBottom: '0.5rem',
+                letterSpacing: '-0.01em',
+              }}
+            >
               {step.title}
             </h3>
-            <p style={{ fontSize: '0.875rem', color: 'var(--color-fg-muted)', lineHeight: 1.65 }}>
+            <p
+              style={{
+                fontSize: '0.875rem',
+                color: 'var(--color-fg-muted)',
+                lineHeight: 1.7,
+                maxWidth: '32ch',
+              }}
+            >
               {step.description}
             </p>
           </div>
         </motion.div>
       ))}
+      <div style={{ borderTop: '1px solid var(--color-border)' }} />
     </div>
   );
 }

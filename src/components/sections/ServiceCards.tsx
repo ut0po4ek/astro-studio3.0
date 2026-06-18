@@ -25,10 +25,10 @@ export default function ServiceCards({ services }: Props) {
         return (
           <motion.div
             key={service.title}
-            initial={prefersReduced ? {} : { opacity: 0, x: -24 }}
+            initial={prefersReduced ? {} : { opacity: 0, x: -56 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, margin: '-40px' }}
-            transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1], delay: i * 0.07 }}
+            transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1], delay: i * 0.09 }}
           >
             <motion.button
               onClick={() => setActive(isOpen ? null : i)}
@@ -46,8 +46,8 @@ export default function ServiceCards({ services }: Props) {
                 textAlign: 'left',
                 position: 'relative',
               }}
-              whileHover={prefersReduced ? {} : { x: 14 }}
-              transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+              whileHover={prefersReduced ? {} : { x: 18 }}
+              transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
             >
               {/* Hover background */}
               <motion.div
@@ -63,8 +63,8 @@ export default function ServiceCards({ services }: Props) {
                 transition={{ duration: 0.25 }}
               />
 
-              {/* Number */}
-              <span
+              {/* Number — independent scale+fade entrance */}
+              <motion.span
                 style={{
                   fontSize: 'clamp(1.75rem, 3vw, 2.25rem)',
                   fontWeight: 200,
@@ -78,11 +78,16 @@ export default function ServiceCards({ services }: Props) {
                   transition: 'color 0.35s ease',
                   position: 'relative',
                   fontVariantNumeric: 'tabular-nums',
+                  display: 'block',
                 }}
+                initial={prefersReduced ? {} : { opacity: 0, scale: 0.6 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true, margin: '-40px' }}
+                transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1], delay: i * 0.09 + 0.15 }}
                 aria-hidden="true"
               >
                 {num}
-              </span>
+              </motion.span>
 
               {/* Title + label badge on same line */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', position: 'relative' }}>

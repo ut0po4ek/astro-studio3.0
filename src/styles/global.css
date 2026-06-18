@@ -4,14 +4,14 @@
    DESIGN TOKENS
 ═══════════════════════════════════════════════════ */
 @layer base {
-  /* ── Dark Tech Indigo — DEFAULT ── */
+  /* ── Dark Fluid Indigo — DEFAULT ── */
   :root,
   [data-theme="dark"] {
-    --color-bg:            #0c0c14;
-    --color-bg-warm:       #111124;
-    --color-bg-dark:       #0a0a12;
-    --color-bg-elevated:   #111124;
-    --color-bg-subtle:     #0a0a12;
+    --color-bg:            #05050a;
+    --color-bg-warm:       #0a0a14;
+    --color-bg-dark:       #030307;
+    --color-bg-elevated:   #0d0d1a;
+    --color-bg-subtle:     #080812;
     --color-fg:            #e2e8f0;
     --color-fg-muted:      #64748b;
     --color-fg-subtle:     #334155;
@@ -59,13 +59,13 @@
     --btn-ghost-hover-border: transparent;
 
     /* Glass / Header */
-    --glass-hero-bg:       rgba(12, 12, 20, 0.40);
-    --glass-hero-border:   rgba(129, 140, 248, 0.10);
+    --glass-hero-bg:       rgba(8, 8, 18, 0.18);
+    --glass-hero-border:   rgba(129, 140, 248, 0.12);
     --glass-hero-text:     rgba(226, 232, 240, 0.95);
     --glass-hero-text-m:   rgba(226, 232, 240, 0.50);
     --glass-hero-cta-bd:   rgba(129, 140, 248, 0.40);
-    --glass-scroll-bg:     rgba(12, 12, 20, 0.90);
-    --glass-scroll-border: rgba(129, 140, 248, 0.12);
+    --glass-scroll-bg:     rgba(8, 8, 18, 0.60);
+    --glass-scroll-border: rgba(129, 140, 248, 0.14);
     --glass-scroll-text:   rgba(226, 232, 240, 0.95);
     --glass-scroll-text-m: rgba(226, 232, 240, 0.50);
     --glass-scroll-cta-bd: rgba(129, 140, 248, 0.40);
@@ -138,13 +138,13 @@
     --btn-ghost-hover-border: transparent;
 
     /* Glass / Header */
-    --glass-hero-bg:       rgba(245, 243, 255, 0.80);
-    --glass-hero-border:   rgba(79, 70, 229, 0.10);
+    --glass-hero-bg:       rgba(248, 246, 255, 0.40);
+    --glass-hero-border:   rgba(79, 70, 229, 0.12);
     --glass-hero-text:     rgba(30, 27, 75, 0.95);
     --glass-hero-text-m:   rgba(30, 27, 75, 0.55);
     --glass-hero-cta-bd:   rgba(79, 70, 229, 0.35);
-    --glass-scroll-bg:     rgba(245, 243, 255, 0.94);
-    --glass-scroll-border: rgba(79, 70, 229, 0.10);
+    --glass-scroll-bg:     rgba(248, 246, 255, 0.72);
+    --glass-scroll-border: rgba(79, 70, 229, 0.12);
     --glass-scroll-text:   rgba(30, 27, 75, 0.95);
     --glass-scroll-text-m: rgba(30, 27, 75, 0.55);
     --glass-scroll-cta-bd: rgba(79, 70, 229, 0.40);
@@ -184,7 +184,7 @@
   }
 
   html {
-    font-family: system-ui, Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-family: 'Outfit', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     font-feature-settings: "cv01", "cv03", "cv04";
     background-color: var(--color-bg);
     color: var(--color-fg);
@@ -195,9 +195,21 @@
 
   body { overflow-x: hidden; }
 
+  /* Grain overlay — breaks digital flatness, premium texture */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9997;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 200px 200px;
+    opacity: 0.032;
+  }
+  [data-theme="light"] body::after { opacity: 0.018; }
+
   @media (hover: hover) and (pointer: fine) {
-    body { cursor: none; }
-    a, button { cursor: none; }
+    *, *::before, *::after { cursor: none !important; }
   }
 
   *, *::before, *::after { box-sizing: border-box; }
@@ -318,23 +330,52 @@
     border-color:     var(--btn-primary-hover-border);
   }
 
-  /* Gradient primary override */
+  /* Gradient primary override — premium glow + shimmer */
   .btn-primary {
     background: var(--gradient-accent);
     border-color: transparent;
     color: #ffffff;
+    position: relative;
+    /* overflow: hidden removed — was clipping magnetic transform animation.
+       Shimmer ::after uses background-position on inset:0 element, so no overflow needed. */
     transition:
       box-shadow 360ms var(--ease-out),
-      transform 360ms var(--ease-out),
-      filter 360ms var(--ease-out);
+      transform  360ms var(--ease-out),
+      filter     360ms var(--ease-out);
+  }
+  /* Shimmer sweep on hover */
+  .btn-primary::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.18) 50%, transparent 60%);
+    background-size: 200% 100%;
+    background-position: 200% 0;
+    transition: background-position 600ms ease;
+    pointer-events: none;
+  }
+  .btn-primary:hover:not(:disabled):not([aria-disabled="true"])::after {
+    background-position: -200% 0;
   }
   .btn-primary:hover:not(:disabled):not([aria-disabled="true"]) {
     transform: translateY(-2px);
-    box-shadow: 0 0 28px rgba(129,140,248,0.40);
-    filter: brightness(1.1);
+    box-shadow: 0 0 36px rgba(129,140,248,0.50), 0 4px 20px rgba(129,140,248,0.25);
+    filter: brightness(1.08);
+  }
+  /* Light theme: soft lavender gradient + dark indigo text — stays readable on every state */
+  [data-theme="light"] .btn-primary {
+    background: linear-gradient(135deg, #ede9fe 0%, #c4b5fd 100%);
+    color: #1e1b4b;
+    border-color: rgba(99, 102, 241, 0.20);
   }
   [data-theme="light"] .btn-primary:hover:not(:disabled):not([aria-disabled="true"]) {
-    box-shadow: 0 0 28px rgba(79,70,229,0.35);
+    color: #1e1b4b;
+    filter: brightness(0.96);
+    box-shadow: 0 0 28px rgba(99,102,241,0.28), 0 4px 16px rgba(99,102,241,0.14);
+  }
+  /* Shimmer tinted to dark for legibility on light gradient */
+  [data-theme="light"] .btn-primary::after {
+    background: linear-gradient(105deg, transparent 40%, rgba(99,102,241,0.12) 50%, transparent 60%);
   }
 
   /* Variant: secondary — transparent border with fill-from-left animation */
@@ -347,11 +388,11 @@
     color:            var(--btn-secondary-text);
     border-color:     var(--btn-secondary-border);
     transition:
-      background-size  420ms var(--ease-out),
-      color            360ms var(--ease-out),
-      border-color     360ms var(--ease-out),
-      transform        360ms var(--ease-out),
-      box-shadow       360ms var(--ease-out);
+      background-size  520ms cubic-bezier(0.16, 1, 0.3, 1),
+      color            420ms cubic-bezier(0.16, 1, 0.3, 1),
+      border-color     420ms cubic-bezier(0.16, 1, 0.3, 1),
+      transform        420ms cubic-bezier(0.16, 1, 0.3, 1),
+      box-shadow       420ms cubic-bezier(0.16, 1, 0.3, 1);
   }
   .btn-secondary:hover:not(:disabled):not([aria-disabled="true"]) {
     background-size: 100% 100%;
@@ -466,6 +507,13 @@
   opacity: 1;
   transform: translate3d(0, 0, 0) scale(1);
   filter: blur(0);
+  /* NOTE: clip-path is NOT reset here — resetting it would permanently apply
+     clip-path: inset(0) to every [data-reveal] element, which clips child
+     box-shadows (e.g. the btn-pulse glow ring) on all four sides.
+     The clip-path reset is scoped to [data-reveal="clip"] only, below. */
+}
+/* Only the "clip" variant needs clip-path reset on reveal */
+[data-reveal="clip"].is-visible {
   clip-path: inset(0 0% 0 0);
 }
 
@@ -551,6 +599,137 @@ html:not(.js) .reveal {
   --num-glow-color-soft: rgba(79, 70, 229, 0.14);
 }
 
+/* ══════════════════════════════════════════════════════════════
+   SECTION-LEVEL REVEALS  (time-based, IntersectionObserver)
+   ─────────────────────────────────────────────────────────────
+   Each <section> gets data-reveal-section="up|scale|left|right".
+   The existing IntersectionObserver in BaseLayout picks it up
+   via the [data-reveal] selector once we alias it below.
+   Values are much more dramatic than element-level reveals so
+   the SECTION itself is clearly visible entering the viewport.
+══════════════════════════════════════════════════════════════ */
+
+/* Section-level hidden state
+   Sections start hidden and are revealed by IntersectionObserver (BaseLayout.astro).
+   The dedicated sectionRevealObserver fires 220px BEFORE the section enters the
+   viewport — so by the time the user's eye reaches the section, the animation is
+   already mid-play and visibly drifting into position.
+   Duration 1.15s is long enough to be clearly felt at normal scroll speed.
+*/
+[data-reveal-section] {
+  opacity: 0;
+  transition:
+    opacity   1150ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 1150ms cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, opacity;
+}
+
+/* ── Rise from below — Services */
+[data-reveal-section="up"] {
+  transform: translateY(5rem);
+}
+
+/* ── Zoom + rise — Portfolio / FeaturedWork */
+[data-reveal-section="scale"] {
+  transform: scale(0.90) translateY(4rem);
+}
+
+/* ── Slide from left — Why section */
+[data-reveal-section="left"] {
+  transform: translateX(-4rem) translateY(1.5rem);
+}
+
+/* ── Slide from right — Process section */
+[data-reveal-section="right"] {
+  transform: translateX(4rem) translateY(1.5rem);
+}
+
+/* ── Drop from above — Contact (creates "closing" feel) */
+[data-reveal-section="drop"] {
+  transform: translateY(-3rem);
+}
+
+/* ── Visible state — IO adds this class */
+[data-reveal-section].is-visible {
+  opacity: 1;
+  transform: none;
+  /* Remove will-change after animation: frees GPU memory AND removes the
+     stacking context that the property creates on non-positioned elements.
+     Without this, sections like #work keep a stacking context that confines
+     their z-index:3 cards, breaking the scroll-line z-index hierarchy. */
+  will-change: auto;
+}
+
+/* Reduced motion: show immediately */
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal-section] {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}
+
+
+/* ══════════════════════════════════════════════════════════════
+   STICKY SECTION STACK
+   FeaturedWork pins at top; ProcessSection (z-2) and WhySection
+   (z-3) slide over it in sequence as the user scrolls.
+══════════════════════════════════════════════════════════════ */
+
+/* sticky-stack contains ProcessSection + WhySection only.
+   ProcessSection sticks at top while WhySection scrolls over it.
+   FeaturedWork is outside this container and scrolls freely. */
+.sticky-stack {
+  position: relative;
+}
+
+/* ProcessSection стикится наверху. Нет явного z-index — это критично:
+   секции с explicit z-index создают stacking context и прячут scroll-line
+   (z-index:0) под собой. Без z-index scroll-line (шаг 6 в порядке отрисовки)
+   рисуется поверх секций (шаг 5 — positioned z-index:auto). */
+#process {
+  position: sticky !important;
+  top: 0;
+}
+
+/* #why без explicit z-index → не создаёт stacking context.
+   Позиция после #process в DOM → отрисовывается поверх при наложении. */
+#why {
+  position: relative;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   PARALLAX LAYERS  (scroll-scrubbed — correct for parallax)
+   Two divs inside FeaturedWork / ServicesGrid drift at
+   different speeds, creating foreground / background depth.
+══════════════════════════════════════════════════════════════ */
+@supports (animation-timeline: view()) {
+
+  [data-parallax="slow"] {
+    animation: parallax-slow linear both;
+    animation-timeline: view();
+    animation-range: entry 0% exit 100%;
+  }
+  @keyframes parallax-slow {
+    from { transform: translateY(-5%); }
+    to   { transform: translateY(5%); }
+  }
+
+  [data-parallax="fast"] {
+    animation: parallax-fast linear both;
+    animation-timeline: view();
+    animation-range: entry 0% exit 100%;
+  }
+  @keyframes parallax-fast {
+    from { transform: translateY(-11%); }
+    to   { transform: translateY(11%); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-parallax] { animation: none !important; transform: none !important; }
+  }
+}
+
 /* ═══════════════════════════════════════════════════
    VIEW TRANSITIONS
 ═══════════════════════════════════════════════════ */
@@ -592,7 +771,7 @@ html:not(.js) .reveal {
   right: clamp(1.5rem, 6vw, 6rem);
   bottom: var(--scroll-line-bottom, 0);
   left: clamp(1.5rem, 6vw, 6rem);
-  z-index: 2;
+  z-index: 0;
   pointer-events: none;
   opacity: 1;
 }
@@ -632,9 +811,30 @@ html:not(.js) .reveal {
 
 .scroll-line-progress {
   stroke: var(--scroll-line-progress);
-  stroke-width: 2.8;
-  filter: drop-shadow(0 0 10px var(--scroll-line-glow));
+  stroke-width: 3;
+  filter:
+    drop-shadow(0 0 6px var(--scroll-line-progress))
+    drop-shadow(0 0 16px var(--scroll-line-glow));
   transition: stroke 240ms ease;
+}
+
+/* CSS scroll-driven animation — Chrome 115+, Safari 17.2+, Firefox 110+.
+   Runs on the compositor: no JS timing issues, no flash, fill/drain on scroll.
+   5565 = getTotalLength() of the SVG path (SVG user units, viewBox 0 0 1000 5200).
+   JS sets --scroll-line-start / --scroll-line-end percentages once after layout. */
+@supports (animation-timeline: scroll()) {
+  .scroll-line-progress {
+    stroke-dasharray: 5565 5565;
+    stroke-dashoffset: 5565;
+    animation: draw-scroll-line linear both;
+    animation-timeline: scroll(root block);
+    animation-range: var(--scroll-line-start, 10%) var(--scroll-line-end, 40%);
+  }
+
+  @keyframes draw-scroll-line {
+    from { stroke-dashoffset: 5565; }
+    to   { stroke-dashoffset: 0; }
+  }
 }
 
 @media (max-width: 768px) {
@@ -647,6 +847,7 @@ html:not(.js) .reveal {
   .scroll-line-progress {
     transition: none;
     stroke-dashoffset: 0 !important;
+    animation: none !important;
   }
 }
 
@@ -753,9 +954,117 @@ html:not(.js) .reveal {
     transform 420ms var(--ease-out);
 }
 
-.service-card:hover,
-.process-step:hover {
+.service-card:hover {
   box-shadow: 0 14px 40px rgba(0, 0, 0, 0.18);
+}
+
+/* Process step hover: lift above scroll line, left accent line, subtle tint. */
+.process-step:hover {
+  background-color: var(--color-bg-warm);
+  z-index: 5;
+  box-shadow:
+    0 -4px 24px rgba(0, 0, 0, 0.22),
+    0  8px 32px rgba(0, 0, 0, 0.18),
+    0  0  0   1px rgba(129, 140, 248, 0.08);
+}
+/* Activate the gradient sweep via CSS group-hover */
+.process-step:hover .process-step-sweep {
+  opacity: 1 !important;
+}
+.process-step::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 2px;
+  background: var(--gradient-accent);
+  transform: scaleY(0);
+  transform-origin: bottom center;
+  transition: transform 320ms cubic-bezier(0.16, 1, 0.3, 1);
+  border-radius: 0 2px 2px 0;
+}
+.process-step:hover::before {
+  transform: scaleY(1);
+}
+
+/* ── "Смотреть все проекты" text link ───────────────────────── */
+.portfolio-view-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  position: relative;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  text-decoration: none;
+  padding-bottom: 3px;
+}
+
+/* Gradient underline — draws left → right on hover */
+.portfolio-view-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--gradient-accent);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 420ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.portfolio-view-link:hover::after {
+  transform: scaleX(1);
+}
+
+/* Arrow — nudges north-east with spring bounce */
+.portfolio-view-link__arrow {
+  flex-shrink: 0;
+  transition: transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.portfolio-view-link:hover .portfolio-view-link__arrow {
+  transform: translate(3px, -3px);
+}
+
+/* Text — slight accent brightening */
+.portfolio-view-link__text {
+  transition: color 220ms ease;
+}
+.portfolio-view-link:hover .portfolio-view-link__text {
+  color: var(--color-accent-2);
+}
+
+/* ── Portfolio card — hover-driven child animations ─────────── */
+/* Arrow badge: rotates 45° + scales up when the parent card is hovered */
+.arrow-badge {
+  transition:
+    transform 280ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    border-color 220ms ease;
+}
+.portfolio-card:hover .arrow-badge {
+  transform: rotate(45deg) scale(1.18);
+  border-color: rgba(129, 140, 248, 0.60);
+}
+
+/* "Открыть кейс" link: arrow nudges on card hover */
+.case-open-link {
+  transition: color 220ms ease;
+}
+.case-open-arrow {
+  transition: transform 260ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.portfolio-card:hover .case-open-link {
+  color: var(--color-accent-2);
+}
+.portfolio-card:hover .case-open-arrow {
+  transform: translate(2px, -2px);
+}
+
+/* Slider progress track — light theme needs a visible base */
+[data-theme="light"] .slider-progress-track {
+  background: rgba(79, 70, 229, 0.15);
+  box-shadow: 0 0 0 1px rgba(79, 70, 229, 0.08);
 }
 
 /* Section accent line */
@@ -850,7 +1159,13 @@ html:not(.js) .reveal {
     100% { box-shadow: 0 0 0 0 rgba(79,70,229,0); }
   }
 }
-.btn-pulse { animation: pulse-glow 2.2s infinite; }
+.btn-pulse {
+  animation: pulse-glow 2.2s infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn-pulse { animation: none; }
+}
 
 /* Animated orbs in hero/cta */
 @keyframes orb-drift-1 {
@@ -889,6 +1204,33 @@ html:not(.js) .reveal {
   box-shadow: 0 12px 36px rgba(79,70,229,0.08);
 }
 
+/* Contact channel cards — fill-from-bottom on hover */
+.contact-channel-card {
+  position: relative;
+  overflow: hidden;
+}
+.contact-channel-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(to top, rgba(129,140,248,0.11) 0%, rgba(129,140,248,0.03) 100%);
+  transform: translateY(100%);
+  transition: transform 600ms cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+  z-index: 0;
+}
+.contact-channel-card:hover::before {
+  transform: translateY(0);
+}
+.contact-channel-card > * {
+  position: relative;
+  z-index: 1;
+}
+[data-theme="light"] .contact-channel-card::before {
+  background: linear-gradient(to top, rgba(79,70,229,0.08) 0%, rgba(79,70,229,0.02) 100%);
+}
+
 /* tag-chip active/hover */
 .tag-chip.active,
 .tag-chip:hover {
@@ -899,4 +1241,136 @@ html:not(.js) .reveal {
 [data-theme="light"] .tag-chip.active,
 [data-theme="light"] .tag-chip:hover {
   background: rgba(79,70,229,0.06);
+}
+
+/* ═══════════════════════════════════════════════════
+   MAGNETIC BUTTON — JS adds --mx/--my custom props
+═══════════════════════════════════════════════════ */
+.btn-primary,
+.btn-secondary {
+  --mx: 0px;
+  --my: 0px;
+  transform: translate(var(--mx), var(--my));
+  will-change: transform;
+  overflow: visible; /* magnetic translate must not be clipped */
+}
+
+/* ═══════════════════════════════════════════════════
+   SECTION HEADING — upgraded accent line
+═══════════════════════════════════════════════════ */
+.accent-line {
+  display: block;
+  width: 32px;
+  height: 2px;
+  background: var(--gradient-accent);
+  margin-bottom: 1rem;
+  border-radius: 2px;
+  position: relative;
+}
+.accent-line::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--gradient-accent);
+  filter: blur(4px);
+  opacity: 0.6;
+}
+
+/* ═══════════════════════════════════════════════════
+   HERO — light theme & mobile overrides
+═══════════════════════════════════════════════════ */
+
+/* Light theme: WebGL canvas renders its own lavender shader — no static fallback needed.
+   Keep a soft background as a pre-hydration flash guard only. */
+[data-theme="light"] #hero {
+  background: #f5f3ff;
+}
+/* canvas is now VISIBLE in light theme — palette is switched via JS uniforms */
+[data-theme="light"] #hero .hero-fade-bottom {
+  background: linear-gradient(to bottom, transparent, var(--color-bg));
+}
+
+/* ═══════════════════════════════════════════════════
+   PAGE HERO — inner page atmospheric shader hero
+   (stays dark in both themes — cinematic stage)
+═══════════════════════════════════════════════════ */
+
+/* Full-width dark atmospheric stage for inner pages.
+   Intentionally stays dark regardless of theme — the shader
+   is always a deep indigo/violet background. */
+/* ── Page Hero — inner pages (contacts, portfolio, services) ─── */
+.page-hero {
+  position: relative;
+  z-index: 1;
+  min-height: clamp(560px, 72svh, 740px);
+  padding-top: var(--header-h, 72px);
+  padding-bottom: var(--header-h, 72px);
+  background-color: #020207 !important;
+}
+[data-theme="light"] .page-hero {
+  background-color: #020207 !important;
+}
+
+/* Gradient — smooth eased fade using the SAME base colour as bg
+   (rgba, not `transparent`) so the interpolation never goes grey.
+   Dark mode: bg is #05050a → use rgba(5,5,10,X).
+   Only the alpha changes, hue stays deep-black throughout. */
+.page-hero-fade {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: clamp(160px, 20vw, 240px);
+  background: linear-gradient(to bottom,
+    rgba(5,5,10,0)    0%,
+    rgba(5,5,10,0.06) 25%,
+    rgba(5,5,10,0.22) 50%,
+    rgba(5,5,10,0.56) 70%,
+    rgba(5,5,10,0.88) 87%,
+    rgba(5,5,10,1)   100%
+  );
+  pointer-events: none;
+  z-index: 5;
+}
+/* Light mode: bg is #f5f3ff — same technique, different base hue */
+[data-theme="light"] .page-hero-fade {
+  background: linear-gradient(to bottom,
+    rgba(245,243,255,0)    0%,
+    rgba(245,243,255,0.06) 25%,
+    rgba(245,243,255,0.22) 50%,
+    rgba(245,243,255,0.56) 70%,
+    rgba(245,243,255,0.88) 87%,
+    rgba(245,243,255,1)   100%
+  );
+}
+
+/* ═══════════════════════════════════════════════════
+   CTA SECTION — ensure text readable over dark bg
+   (section stays dark in both themes by design)
+═══════════════════════════════════════════════════ */
+
+/* Mobile: compact height already set via .cta-root */
+@media (max-width: 767px) {
+  #project-cta .cta-bg-fallback { display: block; }
+}
+
+/* ═══════════════════════════════════════════════════
+   CTA SECTION — mobile fallback (no Three.js)
+═══════════════════════════════════════════════════ */
+
+/* On desktop: invisible — Three.js canvas renders the space scene */
+.cta-bg-fallback {
+  display: none;
+}
+
+/* On mobile / touch: CSS radial gradient replaces Three.js starfield */
+@media (max-width: 767px), (pointer: coarse) {
+  .cta-bg-fallback {
+    display: block;
+    background:
+      radial-gradient(ellipse 70% 55% at 12% 28%, rgba(124, 91, 232, 0.55) 0%, transparent 65%),
+      radial-gradient(ellipse 55% 45% at 88% 72%, rgba(48, 112, 224, 0.40) 0%, transparent 65%),
+      radial-gradient(ellipse 45% 65% at 50% 48%, rgba(26, 168, 152, 0.28) 0%, transparent 65%),
+      radial-gradient(ellipse 30% 30% at 75% 20%, rgba(170, 68, 224, 0.35) 0%, transparent 55%);
+  }
 }
