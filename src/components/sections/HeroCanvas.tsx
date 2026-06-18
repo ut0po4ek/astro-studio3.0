@@ -249,8 +249,13 @@ export default function HeroCanvas() {
 
     // ── Resize ───────────────────────────────────────────────
     function resize() {
-      canvas!.width  = window.innerWidth;
-      canvas!.height = window.innerHeight;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      // Use CSS layout size (offsetWidth/Height), not window.innerWidth which
+      // includes scrollbars and can exceed the CSS viewport on some browsers.
+      const w = canvas!.offsetWidth  || window.innerWidth;
+      const h = canvas!.offsetHeight || window.innerHeight;
+      canvas!.width  = Math.round(w * dpr);
+      canvas!.height = Math.round(h * dpr);
       gl!.viewport(0, 0, canvas!.width, canvas!.height);
     }
 

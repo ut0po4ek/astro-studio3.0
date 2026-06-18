@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 
 interface Step {
@@ -12,6 +13,14 @@ interface Props {
 
 export default function ProcessSteps({ steps }: Props) {
   const prefersReduced = useReducedMotion();
+  const [isTouch, setIsTouch] = useState(false);
+
+  useEffect(() => {
+    setIsTouch(window.matchMedia('(pointer: coarse)').matches);
+  }, []);
+
+  const noHover = prefersReduced || isTouch;
+  const enterDist = isTouch ? 24 : 52;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -30,11 +39,11 @@ export default function ProcessSteps({ steps }: Props) {
             cursor: 'default',
             overflow: 'hidden',
           }}
-          initial={prefersReduced ? {} : { opacity: 0, x: i % 2 === 0 ? -52 : 52 }}
+          initial={prefersReduced ? {} : { opacity: 0, x: i % 2 === 0 ? -enterDist : enterDist }}
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true, margin: '-30px' }}
           transition={{ duration: 0.72, ease: [0.16, 1, 0.3, 1], delay: i * 0.12 }}
-          whileHover={prefersReduced ? {} : {
+          whileHover={noHover ? {} : {
             y: -6,
             transition: { type: 'spring', stiffness: 320, damping: 26 },
           }}

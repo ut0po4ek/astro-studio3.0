@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 
 interface Service {
@@ -15,6 +15,14 @@ interface Props {
 export default function ServiceCards({ services }: Props) {
   const [active, setActive] = useState<number | null>(null);
   const prefersReduced = useReducedMotion();
+  const [isTouch, setIsTouch] = useState(false);
+
+  useEffect(() => {
+    setIsTouch(window.matchMedia('(pointer: coarse)').matches);
+  }, []);
+
+  const noHover = prefersReduced || isTouch;
+  const enterX = isTouch ? -20 : -56;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -25,7 +33,7 @@ export default function ServiceCards({ services }: Props) {
         return (
           <motion.div
             key={service.title}
-            initial={prefersReduced ? {} : { opacity: 0, x: -56 }}
+            initial={prefersReduced ? {} : { opacity: 0, x: enterX }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, margin: '-40px' }}
             transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1], delay: i * 0.09 }}
@@ -46,7 +54,7 @@ export default function ServiceCards({ services }: Props) {
                 textAlign: 'left',
                 position: 'relative',
               }}
-              whileHover={prefersReduced ? {} : { x: 18 }}
+              whileHover={noHover ? {} : { x: 18 }}
               transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
             >
               {/* Hover background */}

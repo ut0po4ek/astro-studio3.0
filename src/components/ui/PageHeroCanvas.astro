@@ -136,11 +136,14 @@ const uid = 'phc-' + Math.random().toString(36).slice(2, 9);
 
     const parent = canvas.parentElement;
     function resize() {
-      const w = parent ? parent.clientWidth  : window.innerWidth;
-      const h = parent ? parent.clientHeight : window.innerHeight;
-      canvas.width  = w;
-      canvas.height = h;
-      gl.viewport(0, 0, w, h);
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      // Use CSS layout dimensions — parent.clientWidth is safe and never
+      // includes scrollbar width or exceeds the CSS viewport.
+      const w = parent ? parent.clientWidth  : canvas.offsetWidth  || window.innerWidth;
+      const h = parent ? parent.clientHeight : canvas.offsetHeight || window.innerHeight;
+      canvas.width  = Math.round(w * dpr);
+      canvas.height = Math.round(h * dpr);
+      gl.viewport(0, 0, canvas.width, canvas.height);
     }
     resize();
     window.addEventListener('resize', resize, { passive: true });

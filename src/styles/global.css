@@ -191,9 +191,11 @@
     scroll-behavior: smooth;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    /* Prevent horizontal scroll on iOS Safari — body alone is insufficient */
+    overflow-x: clip;
   }
 
-  body { overflow-x: hidden; }
+  body { overflow-x: clip; }
 
   /* Grain overlay — breaks digital flatness, premium texture */
   body::after {
@@ -692,6 +694,14 @@ html:not(.js) .reveal {
   top: 0;
 }
 
+/* On mobile the 4 steps + heading exceed the viewport — disable sticky
+   so the section scrolls normally and all steps are reachable. */
+@media (max-width: 767px) {
+  #process {
+    position: relative !important;
+  }
+}
+
 /* #why без explicit z-index → не создаёт stacking context.
    Позиция после #process в DOM → отрисовывается поверх при наложении. */
 #why {
@@ -952,6 +962,9 @@ html:not(.js) .reveal {
     border-color 420ms var(--ease-out),
     box-shadow 420ms var(--ease-out),
     transform 420ms var(--ease-out);
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
 .service-card:hover {
@@ -984,6 +997,13 @@ html:not(.js) .reveal {
 }
 .process-step:hover::before {
   transform: scaleY(1);
+}
+
+@media (max-width: 767px) {
+  .process-step {
+    padding: 1.25rem 2rem 1.25rem 1rem !important;
+    min-height: auto !important;
+  }
 }
 
 /* ── "Смотреть все проекты" text link ───────────────────────── */
