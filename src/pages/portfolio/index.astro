@@ -25,6 +25,8 @@ const projects = portfolio.map(p => ({
       id="hero"
       class="page-hero relative overflow-hidden flex flex-col justify-center"
       aria-label="Портфолио — заголовок"
+      transition:name="page-hero-portfolio"
+      transition:animate="none"
     >
       <PageHeroCanvas />
       <div class="absolute inset-0 z-1 pointer-events-none"

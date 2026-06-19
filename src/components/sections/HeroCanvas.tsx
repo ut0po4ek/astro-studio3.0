@@ -272,6 +272,11 @@ export default function HeroCanvas() {
     // ── Render loop ──────────────────────────────────────────
     const t0 = performance.now();
     let raf = 0;
+    // Guards against a double-start: Safari can fire IntersectionObserver's
+    // initial callback synchronously inside .observe(), which would otherwise
+    // race with the explicit render() call below and spin up two competing
+    // rAF loops (visible as the shader appearing to restart on load).
+    let started = false;
 
     function render() {
       const cc = currentPalette.clearColor;
@@ -295,22 +300,29 @@ export default function HeroCanvas() {
     window.addEventListener('resize',    resize,  { passive: true });
     window.addEventListener('mousemove', onMouse, { passive: true });
 
+    function startRender() {
+      if (started) return;
+      started = true;
+      render();
+    }
+    function stopRender() {
+      cancelAnimationFrame(raf);
+      raf = 0;
+      started = false;
+    }
+
     // ── IntersectionObserver — pause shader when hero off-screen ──
     // Hero is above-fold so it starts rendered, but pauses when user
     // scrolls down past it — saves ~16ms/frame of GPU work while idle.
     const visObs = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) {
-          if (!raf) render(); // resume
-        } else {
-          cancelAnimationFrame(raf);
-          raf = 0; // pause
-        }
+        if (entry.isIntersecting) startRender(); // resume
+        else stopRender(); // pause
       },
       { threshold: 0.01 }
     );
     visObs.observe(canvas);
-    render(); // start immediately (hero is above fold)
+    startRender(); // start immediately (hero is above fold) — no-op if the observer already did
 
     // After WebGL has painted its first frame, fade the canvas in so there's
     // no sudden jump from the section's static background colour to the shader.

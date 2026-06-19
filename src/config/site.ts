@@ -8,16 +8,24 @@ export const siteConfig = {
   year: new Date().getFullYear(),
 
   contacts: {
-    email: 'hello@astro-studio.ru',
+    email: 'Mooneeb@yandex.ru',
     phone: '',
     address: '',
     addressMapsHref: '',
-    telegram: 'https://t.me/astrostudio',
-    whatsapp: 'about:blank',
-    instagram: 'about:blank',
-    vk: 'about:blank',
+    telegram: 'https://t.me/ceoyandexspecial',
+    // Disabled — no real account yet. Leave blank to hide in UI; do not point at placeholder links.
+    whatsapp: '',
+    instagram: '',
+    vk: '',
     max: '',
   },
+
+  // Telegram channels where we publish our work — shown only on the contacts page,
+  // not in the footer or the main contact section.
+  showcaseChannels: [
+    { label: 'Yandex Special', href: 'https://t.me/yandexspecial' },
+    { label: 'Yandex Resort', href: 'https://t.me/yandexresort' },
+  ],
 
   nav: [
     { label: 'Главная',    href: '/' },

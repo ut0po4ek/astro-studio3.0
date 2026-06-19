@@ -54,7 +54,7 @@ export interface Project {
   shortDescription: string;
   description: string;
   tags: string[];
-  category: 'landing' | 'ecommerce' | 'horeca' | 'corporate' | '3d' | 'uiux';
+  category: 'corporate' | 'multipage' | '3d' | 'uiux';
   image: ImageMetadata;
   liveUrl?: string;
   featured: boolean;
@@ -78,8 +78,8 @@ export const portfolio: Project[] = [
     title: 'Photographer Site',
     shortDescription: 'Премиальный сайт-визитка для фотографа с атмосферной подачей и формой записи.',
     description: 'Сайт-визитка для фотографа с акцентом на визуальную атмосферу, портфолио работ и удобную форму записи на съёмку. Тёмная тема подчёркивает работы фотографа и создаёт нужное настроение.',
-    tags: ['Landing', 'UI/UX'],
-    category: 'landing',
+    tags: ['Сайт-визитка', 'UI/UX'],
+    category: 'corporate',
     image: photographerCover,
     liveUrl: 'https://phot0grapher-site.netlify.app/',
     featured: true,
@@ -94,7 +94,7 @@ export const portfolio: Project[] = [
       'Оптимизация изображений',
     ],
     whatWeDid: [
-      'UI/UX дизайн в Figma',
+      'Уникальный UI/UX дизайн',
       'Адаптивная вёрстка',
       'Форма обратной связи',
       'Scroll-анимации',
@@ -111,14 +111,14 @@ export const portfolio: Project[] = [
     slug: 'piccolino',
     title: 'Piccolino Restaurant',
     shortDescription: 'Сайт ресторана с тёплой атмосферой, разделом меню и формой бронирования.',
-    description: 'Лендинг для итальянского ресторана Piccolino с двумя темами (светлой и тёмной), тёплой цветовой палитрой, блоком меню и формой бронирования столика. Сайт создаёт атмосферу итальянского ресторана и побуждает гостей сделать бронь.',
-    tags: ['Landing', 'HoReCa'],
-    category: 'horeca',
+    description: 'Корпоративный сайт итальянского ресторана Piccolino с двумя темами (светлой и тёмной), тёплой цветовой палитрой, блоком меню и формой бронирования столика. Сайт создаёт атмосферу итальянского ресторана и побуждает гостей сделать бронь.',
+    tags: ['Корпоративный сайт'],
+    category: 'corporate',
     image: piccolinoCover,
     liveUrl: 'https://restraunt-site-portofino.netlify.app/',
     featured: true,
     goal: 'Создать сайт, который передаёт уровень заведения, создаёт нужное настроение и помогает гостям быстро сделать бронирование без лишних шагов.',
-    solution: 'Разработали лендинг с тёплой тёмной и светлой палитрами, разделами меню, галереей и встроенной формой бронирования. Прогресс-бар в меню создаёт интерактивный эффект присутствия.',
+    solution: 'Разработали сайт с тёплой тёмной и светлой палитрами, разделами меню, галереей и встроенной формой бронирования. Прогресс-бар в меню создаёт интерактивный эффект присутствия.',
     features: [
       'Светлая и тёмная тема (переключение)',
       'Прогресс-бар в шапке при скролле',
@@ -151,8 +151,8 @@ export const portfolio: Project[] = [
     title: 'Flowers Boutique',
     shortDescription: 'Сайт цветочного бутика с нежным дизайном и каталогом букетов.',
     description: 'Сайт для цветочного бутика: каталог букетов, удобная корзина и форма оформления заказа с доставкой. Доступны светлая и тёмная темы — сайт одинаково красиво выглядит в любом режиме.',
-    tags: ['Landing', 'UI/UX'],
-    category: 'landing',
+    tags: ['Многостраничный сайт', 'UI/UX'],
+    category: 'multipage',
     image: flowersCover,
     liveUrl: 'https://flovers-site.netlify.app/',
     featured: true,
@@ -188,14 +188,14 @@ export const portfolio: Project[] = [
   {
     slug: 'form-light',
     title: 'Form Light',
-    shortDescription: 'Лаконичный лендинг со светлым дизайном и фокусом на форму захвата лидов.',
-    description: 'Светлый минималистичный лендинг с чёткой структурой, акцентом на конверсию и удобной формой обратной связи. Включает тёмную тему, анимации и многошаговую форму с валидацией — всё направлено на одно целевое действие.',
-    tags: ['Landing', 'UI/UX'],
-    category: 'landing',
+    shortDescription: 'Лаконичный корпоративный сайт со светлым дизайном и фокусом на форму захвата лидов.',
+    description: 'Светлый минималистичный сайт с чёткой структурой, акцентом на конверсию и удобной формой обратной связи. Включает тёмную тему, анимации и многошаговую форму с валидацией — всё направлено на одно целевое действие.',
+    tags: ['Корпоративный сайт', 'UI/UX'],
+    category: 'corporate',
     image: formLightCover,
     liveUrl: 'https://form-light-site.netlify.app/',
     featured: true,
-    goal: 'Создать лаконичный лендинг, который фокусирует посетителя на одном целевом действии — заполнении формы обратной связи.',
+    goal: 'Создать лаконичный сайт, который фокусирует посетителя на одном целевом действии — заполнении формы обратной связи.',
     solution: 'Разработали минималистичный светлый сайт с чёткой структурой и продуманным UX, ведущим к заполнению формы. Тёмная тема добавляет гибкость, анимации оживляют интерфейс.',
     features: [
       'Светлая и тёмная тема',
@@ -213,7 +213,7 @@ export const portfolio: Project[] = [
       'Scroll-анимации',
       'Micro-interactions',
     ],
-    result: 'Лендинг получил высокий conversion potential благодаря чистой структуре и фокусу на одном действии. Светлая тема и тёмная тема охватывают все предпочтения аудитории.',
+    result: 'Сайт получил высокий conversion potential благодаря чистой структуре и фокусу на одном действии. Светлая тема и тёмная тема охватывают все предпочтения аудитории.',
     gallery: [formLightDark1, formLightDark2, formLightDark3, formLightLight1, formLightLight2],
     galleryDark: [formLightDark1, formLightDark2, formLightDark3, formLightDark4, formLightDark5, formLightDark6],
     galleryLight: [formLightLight1, formLightLight2, formLightLight3, formLightLight4, formLightLight5, formLightLight6],

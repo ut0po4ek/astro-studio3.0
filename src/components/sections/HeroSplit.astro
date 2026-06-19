@@ -24,9 +24,11 @@ const sliderProjects = getFeaturedProjects().map(p => ({
   id="hero"
   class="relative min-h-dvh flex items-center hero-bg"
   aria-label="Главный экран"
+  transition:name="home-hero"
+  transition:animate="none"
 >
   <!-- WebGL simplex noise shader — fluid dark background, highlights on mouse move -->
-  <HeroCanvas client:load />
+  <HeroCanvas client:load transition:name="home-hero-canvas" transition:animate="none" />
 
   <!-- Bottom gradient fade — transitions shader into page body -->
   <div class="hero-fade-bottom" aria-hidden="true"></div>

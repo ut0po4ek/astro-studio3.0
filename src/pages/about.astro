@@ -49,7 +49,7 @@ const process = [
   {
     num: '03',
     title: 'Дизайн',
-    desc: 'Делаем все экраны в Figma — десктоп и мобайл. Каждый блок обоснован: структура ведёт пользователя к целевому действию.',
+    desc: 'Делаем уникальный дизайн всех экранов — десктоп и мобайл. Каждый блок обоснован: структура ведёт пользователя к целевому действию.',
   },
   {
     num: '04',
@@ -76,6 +76,8 @@ const process = [
       id="hero"
       class="page-hero relative overflow-hidden flex flex-col justify-center"
       aria-label="О студии — заголовок"
+      transition:name="page-hero-about"
+      transition:animate="none"
     >
       <PageHeroCanvas />
       <div class="absolute inset-0 z-1 pointer-events-none"
@@ -148,7 +150,7 @@ const process = [
               Делаем дизайн, который выглядит премиально, но остаётся понятным для пользователя. Запускаем адаптивный сайт с формами, базовой аналитикой и готовностью к продвижению.
             </p>
             <div class="flex flex-wrap gap-3 pt-2">
-              {['Дизайн в Figma', 'Чистый код', 'Анимации', 'Тёмная и светлая тема', 'Формы заявок'].map(tag => (
+              {['Уникальный дизайн', 'Чистый код', 'Анимации', 'Тёмная и светлая тема', 'Формы заявок'].map(tag => (
                 <span class="tag-chip">{tag}</span>
               ))}
             </div>

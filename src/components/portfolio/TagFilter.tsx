@@ -80,8 +80,8 @@ export default function TagFilter({ projects, allTags }: Props) {
         style={{ alignContent: 'start' }}
       >
         {/* mode="wait": all exits complete (140ms) before any enter starts.
-            With compound key (slug+tag), Piccolino exits as "slug-Все" then
-            re-enters as "slug-HoReCa" — two distinct elements, no visual ghost.
+            With compound key (slug+tag), a card exits as "slug-Все" then
+            re-enters as "slug-<tag>" — two distinct elements, no visual ghost.
             The spring entrance plays unobstructed with full user attention. */}
         <AnimatePresence mode="wait">
           {filtered.map((project, index) => (

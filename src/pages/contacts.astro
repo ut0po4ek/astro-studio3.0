@@ -22,20 +22,15 @@ const channels = [
     label: 'Написать в Telegram',
   },
   {
-    icon: 'whatsapp',
-    title: 'WhatsApp',
-    desc: 'Удобно для голосовых сообщений и созвонов.',
-    href: siteConfig.contacts.whatsapp,
-    label: 'Написать в WhatsApp',
-  },
-  {
-    icon: 'vk',
-    title: 'ВКонтакте',
-    desc: 'Публикуем кейсы, процесс работы и советы по дизайну.',
-    href: siteConfig.contacts.vk,
-    label: 'Открыть VK',
+    icon: 'email',
+    title: 'Email',
+    desc: 'Для развёрнутых брифов, документов и официальной переписки.',
+    href: `mailto:${siteConfig.contacts.email}`,
+    label: 'Написать на почту',
   },
 ];
+
+const showcaseChannels = siteConfig.showcaseChannels;
 
 const workingHours = [
   { day: 'Пн — Пт', time: '10:00 — 20:00' },
@@ -54,14 +49,14 @@ const faqs = [
   },
   {
     q: 'Работаете ли вы удалённо?',
-    a: 'Да, работаем полностью удалённо по всей России и СНГ. Общение через мессенджеры, Figma и видеозвонки — без потери в качестве.',
+    a: 'Да, работаем полностью удалённо по всей России и СНГ. Общение через мессенджеры и видеозвонки — без потери в качестве.',
   },
 ];
 ---
 
 <BaseLayout
   title="Контакты — Astro Studio"
-  description="Свяжитесь с Astro Studio, чтобы обсудить сайт, лендинг, интернет-магазин или digital-дизайн."
+  description="Свяжитесь с Astro Studio, чтобы обсудить сайт, лендинг или digital-дизайн."
 >
   <Header />
   <main>
@@ -71,6 +66,8 @@ const faqs = [
       id="hero"
       class="page-hero relative overflow-hidden flex flex-col justify-center"
       aria-label="Контакты — заголовок"
+      transition:name="page-hero-contacts"
+      transition:animate="none"
     >
       <PageHeroCanvas />
       <div class="absolute inset-0 z-1 pointer-events-none"
@@ -106,11 +103,11 @@ const faqs = [
     <!-- Channels -->
     <section class="border-t border-[var(--color-border)]" style="background: var(--color-bg-warm);">
       <div class="container-site py-12 md:py-16">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           {channels.map((ch, i) => (
             <a
-              href={ch.href && ch.href !== '#' && ch.href !== 'about:blank' ? ch.href : undefined}
-              target={ch.href && ch.href !== '#' && ch.href !== 'about:blank' ? '_blank' : undefined}
+              href={ch.href}
+              target={ch.href.startsWith('mailto:') ? undefined : '_blank'}
               rel="noreferrer"
               class="contact-channel-card group flex flex-col gap-4 p-6 rounded-xl border border-[var(--color-border)] hover:border-[var(--color-accent)] transition-colors duration-500"
               style="transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);"
@@ -126,6 +123,40 @@ const faqs = [
               <p class="text-[var(--color-fg-muted)] text-sm leading-relaxed">{ch.desc}</p>
               <span class="text-[var(--color-accent)] text-xs font-medium tracking-wide uppercase flex items-center gap-1 mt-auto group-hover:gap-2 group-hover:underline transition-all duration-300" style="text-underline-offset: 3px;">
                 {ch.label} →
+              </span>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Telegram showcase channels — not in footer/contact section by design -->
+    <section class="border-t border-[var(--color-border)]" style="background: var(--color-bg);">
+      <div class="container-site py-12 md:py-16">
+        <p class="label-tag mb-6" data-reveal>Наши Telegram-каналы</p>
+        <p class="text-[var(--color-fg-muted)] text-sm leading-relaxed mb-8 max-w-2xl" data-reveal data-reveal-delay="60">
+          Помимо личной переписки, мы ведём два канала, где выкладываем наши работы, процесс разработки и кейсы.
+        </p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {showcaseChannels.map((ch, i) => (
+            <a
+              href={ch.href}
+              target="_blank"
+              rel="noreferrer"
+              class="contact-channel-card group flex flex-col gap-4 p-6 rounded-xl border border-[var(--color-border)] hover:border-[var(--color-accent)] transition-colors duration-500"
+              style="transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);"
+              data-reveal
+              data-reveal-delay={i * 80}
+            >
+              <div class="flex items-center gap-3">
+                <span class="w-10 h-10 flex items-center justify-center border border-[var(--color-border)] rounded-full group-hover:border-[var(--color-accent)] group-hover:text-[var(--color-accent)] transition-all duration-300 text-[var(--color-fg-muted)]">
+                  <Icon name="telegram" size={18} />
+                </span>
+                <span class="text-[var(--color-fg)] font-medium text-sm">{ch.label}</span>
+              </div>
+              <p class="text-[var(--color-fg-muted)] text-sm leading-relaxed">Выкладываем наши работы и кейсы студии.</p>
+              <span class="text-[var(--color-accent)] text-xs font-medium tracking-wide uppercase flex items-center gap-1 mt-auto group-hover:gap-2 group-hover:underline transition-all duration-300" style="text-underline-offset: 3px;">
+                Открыть канал →
               </span>
             </a>
           ))}
