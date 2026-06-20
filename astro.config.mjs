@@ -4,7 +4,7 @@ import tailwindcss from '@tailwindcss/vite';
 import sitemap from '@astrojs/sitemap';
 import react from '@astrojs/react';
 
-const site = process.env.PUBLIC_SITE_URL?.replace(/\/$/, '') ?? 'https://astro-studio-v2.netlify.app';
+const site = process.env.PUBLIC_SITE_URL?.replace(/\/$/, '') ?? 'https://astro-studio-utopo4ek.amvera.io';
 
 export default defineConfig({
   site,

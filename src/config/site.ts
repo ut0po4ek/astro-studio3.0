@@ -4,7 +4,7 @@ export const siteConfig = {
   description: 'Создаём сайты, лендинги и digital-дизайн для бизнеса.',
   locale: 'ru',
   ogLocale: 'ru_RU',
-  url: (import.meta.env.PUBLIC_SITE_URL ?? 'https://astro-studio.netlify.app').replace(/\/$/, ''),
+  url: (import.meta.env.PUBLIC_SITE_URL ?? 'https://astro-studio-utopo4ek.amvera.io').replace(/\/$/, ''),
   year: new Date().getFullYear(),
 
   contacts: {

@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://astro-studio.netlify.app/sitemap-index.xml
+Sitemap: https://astro-studio-utopo4ek.amvera.io/sitemap-index.xml
